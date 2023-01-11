@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:macro name="wearable_sensor_package" params="name prefix use_gazebo:=^|false use_fake_hardware:=^|true mock_sensor_commands:=^|false">
+        <ros2_control name="${name}" type="sensor">
+            <hardware>
+                <xacro:if value="${use_fake_hardware}">
+                    <plugin>mock_components/GenericSystem</plugin>
+                    <param name="mock_sensor_commands">${mock_sensor_commands}</param>
+                    <param name="state_following_offset">0.0</param>
+                </xacro:if>
+                <xacro:unless value="${use_fake_hardware}">
+                    <plugin>bearmax_hardware/WearableSensorPackageHardware</plugin>
+                    <param name="device_name">foobar</param>
+                </xacro:unless>
+            </hardware>
+
+            <sensor name="${prefix}ble_wsp_sensor">
+                <state_interface name="dummy.x"/>
+                <param name="frame_id">tool_link</param>
+                <param name="dx_range">100</param>
+            </sensor>
+        </ros2_control>
+    </xacro:macro>
+</robot>
