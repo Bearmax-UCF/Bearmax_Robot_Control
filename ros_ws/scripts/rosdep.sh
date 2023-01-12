@@ -1,3 +1,3 @@
 #!/bin/bash
 
-rosdep install -i --from-path src --rosdistro humble -y
+sudo apt-get update && rosdep install -i --from-path src --rosdistro humble -y

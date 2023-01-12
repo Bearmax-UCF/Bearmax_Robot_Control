@@ -2,14 +2,17 @@
 
 xhost +local:
 
-HOST_DIR=/tmp/placeholderdir
-WORK_DIR=/mnt/
+HOST_DIR=`dirname -- $(dirname -- $(readlink -f -- "$0"))`
+WORK_DIR=/home/ros/ros_ws
 
-docker run -it --rm \
+docker run -it \
+    --name rosgui \
     --network host \
     -e DISPLAY=$DISPLAY \
     -v /tmp/.X11-unix/:/tmp/.X11-unix \
-    -v $HOST_DIR:$WORK_DIR
+    -v $HOST_DIR:$WORK_DIR \
+    -v $HOME/.ros:/home/ros/.ros \
+    -v $HOME/.rviz2:/home/ros/.rviz2 \
     -w $WORK_DIR \
-    ros:humble \
+    bearmax:ros \
     /bin/bash
