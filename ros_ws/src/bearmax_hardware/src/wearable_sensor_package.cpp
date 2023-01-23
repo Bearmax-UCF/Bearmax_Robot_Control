@@ -21,7 +21,8 @@ hardware_interface::CallbackReturn WearableSensorPackageHardware::on_init(
     }
 
     // Get parameters
-    hw_device_name_ = info_.hardware_parameters["device_name"];
+    hw_device_id_ = info_.hardware_parameters["device_id"];
+    hw_gsr_uuid_ = info_.hardware_parameters["gsr_uuid"];
 
     hw_sensor_states_.resize(
         info_.sensors[0].state_interfaces.size(), std::numeric_limits<double>::quiet_NaN());
@@ -35,11 +36,16 @@ std::vector<hardware_interface::StateInterface> WearableSensorPackageHardware::e
     std::vector<hardware_interface::StateInterface> state_interfaces;
 
     // export sensor state interface
+    state_interfaces.emplace_back(hardware_interface::StateInterface(
+        info_.sensors[0].name, "gsr", &gsr));
+
+    /*
     for (uint i = 0; i < info_.sensors[0].state_interfaces.size(); i++)
     {
         state_interfaces.emplace_back(hardware_interface::StateInterface(
             info_.sensors[0].name, info_.sensors[0].state_interfaces[i].name, &hw_sensor_states_[i]));
     }
+    */
 
     return state_interfaces;
 }

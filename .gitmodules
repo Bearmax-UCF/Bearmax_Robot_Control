@@ -1,0 +1,3 @@
+[submodule "ros_ws/src/bearmax_analysis/bearmax_analysis/pyEDA"]
+	path = ros_ws/src/bearmax_analysis/bearmax_analysis/pyEDA
+	url = https://github.com/HealthSciTech/pyEDA.git

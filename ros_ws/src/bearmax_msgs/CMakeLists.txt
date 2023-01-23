@@ -15,6 +15,9 @@ find_package(std_msgs REQUIRED)
 
 set(msg_files
   "msg/Foobar.msg"
+  "msg/StackCommand.msg"
+  "msg/WSPSensorDataRaw.msg"
+  "msg/StressValue.msg"
 )
 
 set(srv_files

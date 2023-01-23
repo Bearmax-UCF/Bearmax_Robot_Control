@@ -40,9 +40,11 @@ namespace bearmax_hardware
        hardware_interface::return_type read(
            const rclcpp::Time & time, const rclcpp::Duration & period) override;
     private:
-      std::string hw_device_name_;
+      std::string hw_device_id_;
+      std::string hw_gsr_uuid_;
       // dummy variable
       std::vector<double> hw_sensor_states_;
+      double gsr = 0;
   };
 }
 

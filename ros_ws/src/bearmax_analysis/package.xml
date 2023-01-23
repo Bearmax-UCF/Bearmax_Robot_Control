@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>bearmax_analysis</name>
+  <version>0.0.0</version>
+  <description>Package to contain data analysis nodes for Bearmax</description>
+  <maintainer email="ros@todo.todo">ros</maintainer>
+  <license>TODO: License declaration</license>
+
+  <depend>python3-opencv</depend>
+  <depend>python-tensorflow-pip</depend>
+  <depend>python-keras-pip</depend>
+  <depend>python3-scipy</depend>
+  <!-- One of the audio deps might be redundant -->
+  <depend>python3-pyaudio</depend>
+  <depend>python3-sounddevice-pip</depend>
+
+  <depend>rclpy</depend>
+  <depend>bearmax_msgs</depend>
+  <depend>std_msgs</depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
