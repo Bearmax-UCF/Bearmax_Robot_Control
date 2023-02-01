@@ -6,4 +6,11 @@
         The Wearable Sensor Package.
     </description>
     </class>
+    <class name="bearmax_hardware/BearmaxArduino"
+           type="bearmax_hardware::BearmaxArduino"
+           base_class_type="hardware_interface::SystemInterface">
+    <description>
+        Hardware Interface for Bearmax Arduino Controller.
+    </description>
+    </class>
 </library>
