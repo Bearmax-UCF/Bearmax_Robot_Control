@@ -8,6 +8,7 @@
   <license>TODO: License declaration</license>
 
   <depend>python3-socketio</depend>
+  <depend>python3-aiohttp</depend>
   <depend>bearmax_msgs</depend>
 
   <exec_depend>rclpy</exec_depend>

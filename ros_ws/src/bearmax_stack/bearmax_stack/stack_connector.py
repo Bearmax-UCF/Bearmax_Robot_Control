@@ -1,18 +1,24 @@
 import rclpy
 from rclpy.node import Node
 
-from bearmax_msgs import StackCommand
+from bearmax_msgs.msg import StackCommand
 
 import asyncio
 import socketio
+import ssl
+import aiohttp
+from importlib.resources import path
+from std_msgs.msg import String
 
-from asyncrcl import spin
+from .asyncrcl import spin
 
-DEFAULT_WS_URL = 'http://localhost:8080'
+DEFAULT_WS_URL = 'https://localhost:8080'
+
+CLIENT_CERT = str(path("bearmax_stack.ssl", "client-crt.pem"))
+CLIENT_KEY = str(path("bearmax_stack.ssl", "client-key.pem"))
+SERVER_CERT = str(path("bearmax_stack.ssl", "server-crt.pem"))
 
 class StackConnector(Node):
-    sio_ = socketio.AsyncClient()
-
     def __init__(self, sio: socketio.AsyncClient):
         super().__init__('stack_connector')
 
@@ -20,17 +26,31 @@ class StackConnector(Node):
         
         self.publisher_ = self.create_publisher(StackCommand, 'stackcommand', 10)
 
-        self.declare_parameter('ws_url', DEFAULT_WS_URL)
+        self.subscriber_ = self.create_subscription(String, "to_stack", self.send_to_stack, 10)
+
+        self._ws_url = self.declare_parameter('ws_url', DEFAULT_WS_URL)
+
+        self.get_logger().info(self._ws_url.value)
 
         self.register_handlers()
 
-        asyncio.get_event_loop().create_task(
-            self.sio_.connect(self.wsl_url)
+        self._event_loop = asyncio.get_running_loop()
+        
+        self._event_loop.create_task(
+            self.connect()
         )
+
+    async def send_to_stack(self, msg):
+        self.get_logger().info(f"[Sent to Stack]: {msg.data}")
+        await self.sio_.send(msg.data)
+
+    async def connect(self):
+        await self.sio_.connect(self.wsl_url)
+        await self.sio_.wait()
 
     @property
     def wsl_url(self) -> str:
-        return self.get_parameter('wsl_url').get_parameter_value().string_value
+        return self._ws_url.get_parameter_value().string_value
 
     async def publish_cmd(self, message: StackCommand):
         self.publisher_.publish(message)
@@ -51,39 +71,48 @@ class StackConnector(Node):
             self.get_logger().info('Disconnected from WebSocket Server')
 
         @self.sio_.event
+        async def disconnecting():
+            self.get_logger().info('Disconnecting from WebSocket Server')
+
+        @self.sio_.event
         async def command(data):
             self.get_logger().info(f"Recieved Command: {data}")
 
             await self.publish_cmd(data)
 
-async def main():
 
-    sio = socketio.AsyncClient()
+async def run(args=None):
+    rclpy.init(args=args)
 
-    stack_connector = StackConnector(sio)
+    ssl_context = ssl.create_default_context()
+    ssl_context.load_verify_locations(SERVER_CERT)
+    ssl_context.load_cert_chain(certfile=CLIENT_CERT, keyfile=CLIENT_KEY)
+    connector = aiohttp.TCPConnector(ssl=ssl_context)
+    async with aiohttp.ClientSession(connector=connector) as http_session:
+        sio = socketio.AsyncClient(http_session=http_session)
 
-    # create tasks for spinning and sleeping
-    spin_task = asyncio.get_event_loop().create_task(spin(stack_connector))
-    sleep_task = asyncio.get_event_loop().create_task(asyncio.sleep(5.0))
+        stack_connector = StackConnector(sio)
 
-    # concurrently execute both tasks
-    await asyncio.wait([spin_task, sleep_task], return_when=asyncio.FIRST_COMPLETED)
+        spin_task = asyncio.get_event_loop().create_task(spin(stack_connector))
 
-    # cancel tasks
-    if spin_task.cancel():
-        await spin_task
-    if sleep_task.cancel():
-        await sleep_task
+        await asyncio.gather(spin_task)
 
-    if (sio.connected):
-        await sio.disconnect()
+        # cancel tasks
+        if spin_task.cancel():
+            await spin_task
 
-    stack_connector.destroy_node()
+        if (sio.connected):
+            await sio.disconnect()
 
+        stack_connector.destroy_node()
     rclpy.shutdown()
 
-if __name__ == '__main__':
-    rclpy.init()
-    asyncio.get_event_loop().run_until_complete(main())
-    asyncio.get_event_loop().close()
-    rclpy.shutdown()
+def main(args=None):
+    try:
+        asyncio.run(run(args=args))
+    except RuntimeError:
+        # FIXME: There must be a better way to handle cleanup of async stuff
+        pass
+
+if __name__ == "__main__":
+    main()
