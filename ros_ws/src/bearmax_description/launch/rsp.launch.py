@@ -28,6 +28,12 @@ def generate_launch_description():
         output="screen",
         parameters=[params]
     )
+        
+    node_joint_state_publisher_gui = Node(
+        package="joint_state_publisher_gui",
+        executable="joint_state_publisher_gui",
+        parameters=[params]
+    )
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -35,5 +41,6 @@ def generate_launch_description():
             default_value="false",
             description="Use sim time if true"
         ),
-        node_robot_state_publisher
+        node_robot_state_publisher,
+        node_joint_state_publisher_gui
     ])

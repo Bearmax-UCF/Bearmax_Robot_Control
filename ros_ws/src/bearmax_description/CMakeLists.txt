@@ -14,7 +14,7 @@ find_package(urdf REQUIRED)
 
 # Install
 install(
-  DIRECTORY config gazebo launch ros2_control urdf
+  DIRECTORY config launch meshes textures urdf
   DESTINATION share/${PROJECT_NAME}
 )
 
