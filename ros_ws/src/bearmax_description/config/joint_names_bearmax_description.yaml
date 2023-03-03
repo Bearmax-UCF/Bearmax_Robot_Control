@@ -1,1 +1,1 @@
-controller_joint_names: ['', 'chassis_joint', 'left_arm_shoulder_joint', 'left_arm_rotator_joint', 'left_arm_elbow_joint', 'right_arm_shoulder_joint', 'right_arm_rotator_joint', 'right_arm_elbow_joint', ]
+controller_joint_names: ['', 'chassis_joint', 'left_arm_shoulder_joint', 'left_arm_rotator_joint', 'left_arm_elbow_joint', 'right_arm_shoulder_joint', 'right_arm_rotator_joint', 'right_arm_elbow_joint', 'left_ear_rotator_joint', 'left_ear_pitch_joint', 'right_ear_rotator_joint', 'right_ear_pitch_joint', ]
