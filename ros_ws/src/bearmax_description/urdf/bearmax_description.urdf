@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="bearmax_description">
   <link
     name="base_link">
     <inertial>
@@ -93,8 +97,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-${pi/2}"
-      upper="${pi/2}"
+      lower="-1.57"
+      upper="1.57"
       effort="10"
       velocity="100" />
   </joint>
@@ -204,8 +208,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-${pi/2}"
-      upper="${pi/2}"
+      lower="-1.57"
+      upper="1.57"
       effort="10"
       velocity="100" />
   </joint>
@@ -262,8 +266,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-${pi/2}"
-      upper="${pi/2}"
+      lower="-1.57"
+      upper="1.57"
       effort="10"
       velocity="100" />
   </joint>
@@ -320,8 +324,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-${pi/2}"
-      upper="${pi/2}"
+      lower="-1.57"
+      upper="1.57"
       effort="10"
       velocity="100" />
   </joint>
@@ -378,8 +382,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-${pi/2}"
-      upper="${pi/2}"
+      lower="-1.57"
+      upper="1.57"
       effort="10"
       velocity="100" />
   </joint>
@@ -436,8 +440,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-${pi/2}"
-      upper="${pi/2}"
+      lower="-1.57"
+      upper="1.57"
       effort="10"
       velocity="100" />
   </joint>
@@ -494,8 +498,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-${pi/2}"
-      upper="${pi/2}"
+      lower="-1.57"
+      upper="1.57"
       effort="10"
       velocity="100" />
   </joint>
@@ -605,8 +609,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-${pi/2}"
-      upper="${pi/2}"
+      lower="-1.57"
+      upper="1.57"
       effort="10"
       velocity="100" />
   </joint>
@@ -663,8 +667,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-${pi/2}"
-      upper="${pi/2}"
+      lower="-1.57"
+      upper="1.57"
       effort="10"
       velocity="100" />
   </joint>
@@ -721,8 +725,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-${pi/2}"
-      upper="${pi/2}"
+      lower="-1.57"
+      upper="1.57"
       effort="10"
       velocity="100" />
   </joint>
@@ -779,8 +783,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-${pi/2}"
-      upper="${pi/2}"
+      lower="-1.57"
+      upper="1.57"
       effort="10"
       velocity="100" />
   </joint>
@@ -836,11 +840,5 @@
       link="camera_link" />
     <axis
       xyz="0 0 0" />
-  </joint>
-  <link name="camera_optical_link"></link>
-  <joint name="camera_optical_joint" type="fixed">
-	<parent link="camera_link"/>
-	<child link="camera_optical_link"/>
-	<origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
   </joint>
 </robot>
