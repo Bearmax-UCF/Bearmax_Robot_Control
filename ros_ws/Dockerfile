@@ -3,7 +3,8 @@ FROM ros:humble
 RUN groupadd -g 1000 ros && \
     useradd -m -u 1000 -g ros -G sudo ros && \
     echo "ros:ros" | chpasswd && \
-    apt-get update
+    apt-get update && \
+    echo ". /opt/ros/humble/setup.bash" >> /etc/profile
 
 USER ros
 

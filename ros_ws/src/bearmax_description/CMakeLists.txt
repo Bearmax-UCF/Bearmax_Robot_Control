@@ -14,7 +14,7 @@ find_package(urdf REQUIRED)
 
 # Install
 install(
-  DIRECTORY config launch meshes textures urdf
+  DIRECTORY config launch meshes urdf
   DESTINATION share/${PROJECT_NAME}
 )
 
