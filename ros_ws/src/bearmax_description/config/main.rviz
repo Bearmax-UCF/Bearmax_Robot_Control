@@ -6,8 +6,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /TF1/Status1
-        - /TF1/Frames1/torso_link1
+        - /TF1
         - /RobotModel1
       Splitter Ratio: 0.5
     Tree Height: 743
@@ -57,31 +56,55 @@ Visualization Manager:
         All Enabled: false
         base_link:
           Value: false
+        camera_link:
+          Value: true
+        camera_optical_link:
+          Value: true
         chassis_link:
           Value: false
+        head_platform_link:
+          Value: true
         left_arm_elbow_link:
           Value: false
         left_arm_rotator_link:
           Value: false
         left_arm_shoulder_link:
           Value: false
+        left_ear_pitch_link:
+          Value: true
+        left_ear_rotator_link:
+          Value: true
         right_arm_elbow_link:
           Value: false
         right_arm_rotator_link:
           Value: false
         right_arm_shoulder_link:
           Value: false
+        right_ear_pitch_link:
+          Value: true
+        right_ear_rotator_link:
+          Value: true
         torso_link:
           Value: true
-      Marker Scale: 1
+      Marker Scale: 0.10000000149011612
       Name: TF
-      Show Arrows: false
+      Show Arrows: true
       Show Axes: true
-      Show Names: false
+      Show Names: true
       Tree:
         base_link:
           chassis_link:
             torso_link:
+              head_platform_link:
+                camera_link:
+                  camera_optical_link:
+                    {}
+                left_ear_rotator_link:
+                  left_ear_pitch_link:
+                    {}
+                right_ear_rotator_link:
+                  right_ear_pitch_link:
+                    {}
               left_arm_shoulder_link:
                 left_arm_rotator_link:
                   left_arm_elbow_link:
@@ -115,7 +138,21 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        camera_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        camera_optical_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         chassis_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        head_platform_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -135,6 +172,16 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        left_ear_pitch_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        left_ear_rotator_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         right_arm_elbow_link:
           Alpha: 1
           Show Axes: false
@@ -146,6 +193,16 @@ Visualization Manager:
           Show Trail: false
           Value: true
         right_arm_shoulder_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        right_ear_pitch_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        right_ear_rotator_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -209,25 +266,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 0.556139349937439
+      Distance: 0.7162125110626221
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.1875913441181183
-        Y: -0.2495201677083969
-        Z: 0.2600557506084442
+        X: -0.15252560377120972
+        Y: -0.24656550586223602
+        Z: 0.36074212193489075
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.9103981256484985
+      Pitch: 0.32539820671081543
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.728611946105957
+      Yaw: 4.673611640930176
     Saved: ~
 Window Geometry:
   Displays:
