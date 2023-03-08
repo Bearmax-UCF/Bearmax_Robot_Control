@@ -34,7 +34,13 @@ hardware_interface::CallbackReturn BearmaxArduino::on_init(
         info_.joints.size(), std::numeric_limits<int>::quiet_NaN());
 
     // Setup Arduino
-    arduino_.setup(cfg_.device, cfg._baud_rate, cfg.timeout);
+    arduino_.setup(cfg_.device, cfg_.baud_rate, cfg_.timeout);
+
+    if (arduino_.connected()) {
+        RCLCPP_INFO(rclcpp::get_logger("BearmaxArduino"), "Already connected!");
+    } else {
+        RCLCPP_INFO(rclcpp::get_logger("BearmaxArduino"), "Not yet connected!");
+    }
 
     RCLCPP_INFO(rclcpp::get_logger("BearmaxArduino"), "Finished Initialization");
 
@@ -52,7 +58,9 @@ std::vector<hardware_interface::StateInterface> BearmaxArduino::export_state_int
             hardware_interface::StateInterface(
                 info_.joints[i].name,
                 hardware_interface::HW_IF_POSITION,
-                &hw_servo_states_[i]));
+                &hw_servo_states_[i]
+            )
+        );
     }
 
     return state_interfaces;
@@ -67,7 +75,9 @@ std::vector<hardware_interface::CommandInterface> BearmaxArduino::export_command
             hardware_interface::CommandInterface(
                 info_.joints[i].name,
                 hardware_interface::HW_IF_POSITION,
-                &hw_servo_cmds_[i]));
+                &hw_servo_cmds_[i]
+            )
+        );
     }
 
     return command_interfaces;
@@ -76,6 +86,11 @@ std::vector<hardware_interface::CommandInterface> BearmaxArduino::export_command
 hardware_interface::CallbackReturn BearmaxArduino::on_activate(
     const rclcpp_lifecycle::State & /*previous_state*/)
 {
+    if (!arduino_.connected()) {
+        arduino_.connect();
+    }
+
+    arduino_.sendMsg("test");
 
     // Set default values.
     for (auto i = 0u; i < hw_servo_states_.size(); i++) {
@@ -91,8 +106,9 @@ hardware_interface::CallbackReturn BearmaxArduino::on_activate(
 hardware_interface::CallbackReturn BearmaxArduino::on_deactivate(
     const rclcpp_lifecycle::State & /*previous_state*/)
 {
-
-    // TODO: Close BLE connection
+    if (arduino_.connected()) {
+        arduino_.disconnect();
+    }
 
     return hardware_interface::CallbackReturn::SUCCESS;
 }

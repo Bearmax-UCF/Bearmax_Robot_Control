@@ -1,12 +1,12 @@
-<?xml version="1.0"?>
+<?xml version="180.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
     <xacro:unless value="$(arg sim_mode)">
         <ros2_control name="Bearmax" type="system">
             <hardware>
                 <plugin>bearmax_hardware/BearmaxArduino</plugin>
-                <param name="device">/dev/ttyUSB0</param>
+                <param name="device">/dev/ttyACM0</param>
                 <param name="baud_rate">57600</param>
-                <param name="timeout">1000</param>
+                <param name="timeout">180000</param>
             </hardware>
             <!-- Chassis Joints -->
             <joint name="chassis_joint">
@@ -17,23 +17,44 @@
                 <state_interface name="position" />
             </joint>
             <!-- Head Joints -->
-            <!-- TODO: Determine if can compute servo positions on ros -->
-            <!--
-            <joint name="left_ear_rotation">
+            <!-- Head Platform -->
+            <joint name="head_platform_roll_joint">
                 <command_interface name="position">
                     <param name="min">0</param>
                     <param name="max">180</param>
                 </command_interface>
                 <state_interface name="position" />
             </joint>
-            <joint name="left_ear_pitch">
+            <joint name="head_platform_pitch_joint">
                 <command_interface name="position">
                     <param name="min">0</param>
                     <param name="max">180</param>
                 </command_interface>
                 <state_interface name="position" />
             </joint>
-            <joint name="right_ear_rotation">
+            <joint name="head_platform_yaw_joint">
+                <command_interface name="position">
+                    <param name="min">0</param>
+                    <param name="max">180</param>
+                </command_interface>
+                <state_interface name="position" />
+            </joint>
+            <!-- Ears -->
+            <joint name="left_ear_rotator_joint">
+                <command_interface name="position">
+                    <param name="min">0</param>
+                    <param name="max">180</param>
+                </command_interface>
+                <state_interface name="position" />
+            </joint>
+            <joint name="left_ear_pitch_joint">
+                <command_interface name="position">
+                    <param name="min">0</param>
+                    <param name="max">180</param>
+                </command_interface>
+                <state_interface name="position" />
+            </joint>
+            <joint name="right_ear_rotator_joint">
                 <command_interface name="position">
                     <param name="min">0</param>
                     <param name="max">180</param>

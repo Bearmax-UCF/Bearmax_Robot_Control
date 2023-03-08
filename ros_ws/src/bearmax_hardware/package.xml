@@ -11,6 +11,8 @@
 
   <depend>hardware_interface</depend>
   <depend>pluginlib</depend>
+  <depend>controller_manager</depend>
+  <depend>serial_driver</depend>
   <depend>rclcpp</depend>
   <depend>rclcpp_lifecycle</depend>
 

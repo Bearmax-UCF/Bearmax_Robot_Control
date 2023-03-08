@@ -2,9 +2,9 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
   <link
     name="base_link">
-    <!--<inertial>
+    <inertial>
       <origin
-        xyz="-0.17187 0.041344 0.40096"
+        xyz="-0.17187 -0.4 0.051344"
         rpy="0 0 0" />
       <mass
         value="0.50183" />
@@ -15,21 +15,36 @@
         iyy="0.0011449"
         iyz="-2.4791E-06"
         izz="0.0003814" />
-    </inertial>-->
+    </inertial>
     <visual>
       <origin
         xyz="0 0 0"
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bearmax_description/meshes/base_link.STL" />
+            filename="package://bearmax_description/meshes/base_link.STL"
+        />
       </geometry>
-      <material
+      <!--material
         name="">
         <color
           rgba="0.79216 0.81961 0.93333 1" />
-      </material>
+      </material-->
     </visual>
+    <!--visual>
+      <origin
+          xyz="-0.17961 -0.40208 -0.01"
+          rpy="0 0 0"
+      />
+      <geometry>
+          <box size="0.3 0.3 0.01"/>
+      </geometry>
+      <material
+        name="black">
+        <color
+          rgba="0 0 0 1" />
+      </material>
+    </visual-->
     <collision>
       <origin
         xyz="0 0 0"
@@ -37,6 +52,16 @@
       <geometry>
         <mesh
           filename="package://bearmax_description/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+    <!-- To prevent the robot from tipping over cause of bad interals -->
+    <collision>
+      <origin
+          xyz="-0.17961 -0.40208 -0.01"
+          rpy="0 0 0"
+      />
+      <geometry>
+          <box size="0.3 0.3 0.01"/>
       </geometry>
     </collision>
   </link>
@@ -551,16 +576,53 @@
       </geometry>
     </collision>
   </link>
-  <joint
-    name="head_platform_joint"
-    type="floating">
+  <!-- Head Platform Joints -->
+  <joint name="head_platform_pitch_joint" type="revolute">
     <origin
-      xyz="0 -0.074456 0"
-      rpy="0 0 ${pi}" />
-    <parent
-      link="torso_link" />
-    <child
-      link="head_platform_link" />
+        xyz="0 -0.074456 0"
+        rpy="0 0 ${pi}"
+    />
+    <parent link="torso_link" />
+    <child link="head_platform_roll_link" />
+    <limit
+        lower="-${pi/6}"
+        upper="${pi/6}"
+        effort="10"
+        velocity="100"
+    />
+    <axis xyz="1 0 0" />
+  </joint>
+  <link name="head_platform_roll_link"></link>
+  <joint name="head_platform_roll_joint" type="revolute">
+    <origin
+        xyz="0 0 0"
+        rpy="0 0 0"
+    />
+    <parent link="head_platform_roll_link" />
+    <child link="head_platform_yaw_link" />
+    <limit
+        lower="-${pi/6}"
+        upper="${pi/6}"
+        effort="10"
+        velocity="100"
+    />
+    <axis xyz="0 0 1" />
+  </joint>
+  <link name="head_platform_yaw_link"></link>
+  <joint name="head_platform_yaw_joint" type="revolute">
+    <origin
+        xyz="0 0 0"
+        rpy="0 0 0"
+    />
+    <parent link="head_platform_yaw_link" />
+    <child link="head_platform_link" />
+    <limit
+        lower="-${pi/2}"
+        upper="${pi/2}"
+        effort="10"
+        velocity="100"
+    />
+    <axis xyz="0 1 0" />
   </joint>
   <link
     name="left_ear_rotator_link">

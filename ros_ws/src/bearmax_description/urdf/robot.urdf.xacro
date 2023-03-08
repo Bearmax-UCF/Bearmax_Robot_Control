@@ -4,6 +4,15 @@
     <xacro:arg name="sim_mode" default="false"/>
 
     <xacro:include filename="bearmax_description.urdf.xacro" />
+
     <xacro:include filename="hardware.ros2_control.xacro" />
+    <!--
+    <xacro:if value="$(arg use_ros2_control)">
+        <xacro:include filename="hardware.ros2_control.xacro" />
+    </xacro:if>
+    <xacro:unless value="$(arg use_ros2_control)">
+        <xacro:include filename="hardware.gazebo_control.xacro" />
+    </xacro:unless>
+    -->
 </robot>
 

@@ -10,17 +10,21 @@ find_package(ament_cmake REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
+find_package(serial_driver REQUIRED)
 find_package(hardware_interface REQUIRED)
+find_package(controller_manager REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 
 ## Compile
 # TODO: Add some hardware interfaces (dummy ones at the very least)
+#   src/wearable_sensor_package.cpp
 add_library(
   ${PROJECT_NAME}
   SHARED
-   src/wearable_sensor_package.cpp
+  src/arduino_comms.cpp
+  src/bearmax_arduino.cpp
 )
 target_include_directories(
   ${PROJECT_NAME}
@@ -30,6 +34,8 @@ target_include_directories(
 ament_target_dependencies(
   ${PROJECT_NAME}
   hardware_interface
+  controller_manager
+  serial_driver
   pluginlib
   rclcpp
   rclcpp_lifecycle
@@ -45,8 +51,8 @@ install(
   DESTINATION lib
 )
 install(
-  DIRECTORY include/
-  DESTINATION include
+  DIRECTORY include
+  DESTINATION include/${PROJECT_NAME}
 )
 
 if(BUILD_TESTING)
@@ -71,6 +77,8 @@ ament_export_libraries(
 )
 ament_export_dependencies(
   hardware_interface
+  controller_manager
+  serial_driver
   pluginlib
   rclcpp
   rclcpp_lifecycle

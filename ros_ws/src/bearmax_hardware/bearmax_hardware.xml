@@ -1,11 +1,11 @@
 <library path="bearmax_hardware">
-    <class name="bearmax_hardware/WearableSensorPackageHardware"
+    <!--class name="bearmax_hardware/WearableSensorPackageHardware"
            type="bearmax_hardware::WearableSensorPackageHardware"
            base_class_type="hardware_interface::SensorInterface">
     <description>
         The Wearable Sensor Package.
     </description>
-    </class>
+    </class-->
     <class name="bearmax_hardware/BearmaxArduino"
            type="bearmax_hardware::BearmaxArduino"
            base_class_type="hardware_interface::SystemInterface">

@@ -1,18 +1,38 @@
 #include "bearmax_hardware/arduino_comms.hpp"
 
-#include <rclcpp/rclcpp.hpp>
 #include <sstream>
 #include <cstdlib>
 
 namespace bearmax_hardware
 {
-    void ArduinoComms::setup(const std::string &serial_device, int baud_rate, int timeout_ms)
+
+    ArduinoComms::ArduinoComms()
+        : owned_ctx_{new IoContext(2)}
+        , serial_driver_{new SerialDriver(*owned_ctx_)}
+    { }
+
+
+    ArduinoComms::~ArduinoComms() {
+        if (owned_ctx_) {
+            owned_ctx_->waitForExit();
+        }
+    }
+
+    void ArduinoComms::setup(const std::string &serial_device, int baud_rate, int /*timeout_ms*/)
     {
-        serial_conn_.setPort(serial_device);
-        serial_conn_.setBaudrate(baud_rate);
-        serial::Timeout tt = serial::Timeout::simpleTimeout(timeout_ms);
-        serial_conn_.setTimeout(tt);
-        serial_conn_.open();
+
+        serial_config_ = std::make_unique<SerialPortConfig>(
+            baud_rate,
+            drivers::serial_driver::FlowControl::NONE,
+            drivers::serial_driver::Parity::NONE,
+            drivers::serial_driver::StopBits::ONE
+        );
+
+        serial_driver_->init_port(
+            serial_device,
+            *serial_config_
+            );
+
     }
 
     void ArduinoComms::sendEmptyMsg()
@@ -20,7 +40,7 @@ namespace bearmax_hardware
         std::string res = sendMsg("\n");
     }
 
-    void ArduinoComms::setServoValues(std::vector<int> v)
+    void ArduinoComms::setServoValues(std::vector<double> v)
     {
         std::stringstream ss;
         ss << "s ";
@@ -29,7 +49,7 @@ namespace bearmax_hardware
             if (i > 0) {
                 ss << ":";
             }
-            ss << v[i];
+            ss << (int)v[i];
         }
 
         ss << "\n";
@@ -39,9 +59,17 @@ namespace bearmax_hardware
 
     std::string ArduinoComms::sendMsg(const std::string &msg)
     {
-        serial_conn_.write(msg);
-        std::string res = serial_conn_.readline();
+        //serial_conn_.write(msg);
+        //std::string res = serial_conn_.readline();
+        std::vector<uint8_t> tx_buff(msg.begin(), msg.end());
 
-        return res;
+ //       std::vector<uint8_t> rx_buff;
+
+        serial_driver_->port()->send(tx_buff);
+
+//        serial_driver_->port()->receive(std
+
+
+        return "";
     }
 }
