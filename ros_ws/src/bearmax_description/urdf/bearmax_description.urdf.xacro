@@ -25,11 +25,11 @@
             filename="package://bearmax_description/meshes/base_link.STL"
         />
       </geometry>
-      <!--material
+      <material
         name="">
         <color
           rgba="0.79216 0.81961 0.93333 1" />
-      </material-->
+      </material>
     </visual>
     <!--visual>
       <origin
@@ -364,6 +364,17 @@
       effort="10"
       velocity="100" />
   </joint>
+  <link name="left_arm_end_link">
+  </link>
+  <joint
+      name="left_arm_end_joint"
+      type="fixed">
+    <origin
+        xyz="0.1 0.0125 0"
+    />
+    <parent link="left_arm_elbow_link" />
+    <child link="left_arm_end_link" />
+  </joint>
   <link
     name="right_arm_shoulder_link">
     <inertial>
@@ -541,6 +552,17 @@
       upper="${pi/2}"
       effort="10"
       velocity="100" />
+  </joint>
+  <link name="right_arm_end_link">
+  </link>
+  <joint
+      name="right_arm_end_joint"
+      type="fixed">
+    <origin
+        xyz="0.1 0.0075 0"
+    />
+    <parent link="right_arm_elbow_link" />
+    <child link="right_arm_end_link" />
   </joint>
   <link
     name="head_platform_link">

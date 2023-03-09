@@ -5,6 +5,24 @@
 
 namespace bearmax_hardware
 {
+    // Used for array indexes! Don't change numbers!
+    enum Joint {
+        CHASSIS = 0,
+        HEAD_ROLL,
+        HEAD_PITCH,
+        HEAD_YAW,
+        LEFT_EAR_YAW,
+        LEFT_EAR_PITCH,
+        RIGHT_EAR_YAW,
+        RIGHT_EAR_PITCH,
+        LEFT_ARM_SHOULDER,
+        LEFT_ARM_ROTATOR,
+        LEFT_ARM_ELBOW,
+        RIGHT_ARM_SHOULDER,
+        RIGHT_ARM_ROTATOR,
+        RIGHT_ARM_ELBOW,
+        NUMBER_OF_JOINTS /* not a valid index! */
+    };
 
     ArduinoComms::ArduinoComms()
         : owned_ctx_{new IoContext(2)}
@@ -40,6 +58,36 @@ namespace bearmax_hardware
         std::string res = sendMsg("\n");
     }
 
+    void ArduinoComms::getServoValues(std::vector<double>& v)
+    {
+
+        std::string res = sendMsg("r\n");
+        std::string delim = ":";
+
+        size_t delim_idx = 0;
+
+        for (size_t i = 0; i < Joint::NUMBER_OF_JOINTS; i++) {
+            size_t next_delim_idx = 0;
+            if (i == 0) {
+                next_delim_idx = res.find(delim, 0);
+            } else {
+                next_delim_idx = res.find(delim, delim_idx + 1);
+            }
+
+            std::string token = "";
+            if (i == 0) {
+                token = res.substr(0, next_delim_idx);
+            } else {
+                token = res.substr(delim_idx + 1, next_delim_idx - delim_idx);
+            }
+
+            v[i] = (double) std::atoi(token.c_str());
+
+            delim_idx = next_delim_idx;
+        }
+
+    }
+
     void ArduinoComms::setServoValues(std::vector<double> v)
     {
         std::stringstream ss;
@@ -59,17 +107,16 @@ namespace bearmax_hardware
 
     std::string ArduinoComms::sendMsg(const std::string &msg)
     {
-        //serial_conn_.write(msg);
-        //std::string res = serial_conn_.readline();
         std::vector<uint8_t> tx_buff(msg.begin(), msg.end());
 
- //       std::vector<uint8_t> rx_buff;
+        std::vector<uint8_t> rx_buff;
 
         serial_driver_->port()->send(tx_buff);
 
-//        serial_driver_->port()->receive(std
+        serial_driver_->port()->receive(rx_buff);
 
+        std::string rx_str(rx_buff.begin(), rx_buff.end());
 
-        return "";
+        return rx_str;
     }
 }

@@ -90,7 +90,7 @@ hardware_interface::CallbackReturn BearmaxArduino::on_activate(
         arduino_.connect();
     }
 
-    arduino_.sendMsg("test");
+    // TODO: Maybe add an 'activate' command to arduino to power on the servos?
 
     // Set default values.
     for (auto i = 0u; i < hw_servo_states_.size(); i++) {
@@ -110,6 +110,8 @@ hardware_interface::CallbackReturn BearmaxArduino::on_deactivate(
         arduino_.disconnect();
     }
 
+    // TODO: Maybe add an 'deactivate' command to arduino to power off the servos?
+
     return hardware_interface::CallbackReturn::SUCCESS;
 }
 
@@ -120,7 +122,7 @@ hardware_interface::return_type BearmaxArduino::read(
         return hardware_interface::return_type::ERROR;
     }
 
-    // TODO: Read servo data into hw_servo_states_
+    arduino_.getServoValues(hw_servo_states_);
 
     return hardware_interface::return_type::OK;
 }

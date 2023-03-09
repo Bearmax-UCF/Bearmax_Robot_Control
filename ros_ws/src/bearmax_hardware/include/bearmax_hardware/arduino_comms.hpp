@@ -23,6 +23,7 @@ namespace bearmax_hardware
             void setup(const std::string &serial_device, int baud_rate, int timeout_ms);
             void sendEmptyMsg();
             void setServoValues(std::vector<double> v);
+            void getServoValues(std::vector<double>& v);
 
             bool connected() const { return serial_driver_->port()->is_open(); }
             void connect() const { serial_driver_->port()->open(); }

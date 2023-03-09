@@ -1,10 +1,10 @@
-<?xml version="180.0"?>
+<?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
     <xacro:unless value="$(arg sim_mode)">
         <ros2_control name="Bearmax" type="system">
             <hardware>
                 <plugin>bearmax_hardware/BearmaxArduino</plugin>
-                <param name="device">/dev/ttyACM0</param>
+                <param name="device">/dev/pts/10</param>
                 <param name="baud_rate">57600</param>
                 <param name="timeout">180000</param>
             </hardware>
@@ -61,7 +61,7 @@
                 </command_interface>
                 <state_interface name="position" />
             </joint>
-            <joint name="right_ear_pitch">
+            <joint name="right_ear_pitch_joint">
                 <command_interface name="position">
                     <param name="min">0</param>
                     <param name="max">180</param>
