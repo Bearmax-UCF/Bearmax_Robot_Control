@@ -9,8 +9,11 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 add_executable(bearmax_moveit src/bearmax_moveit.cpp)
+add_executable(face_follower src/face_follower.cpp)
 target_include_directories(bearmax_moveit PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
@@ -21,7 +24,19 @@ ament_target_dependencies(
   "rclcpp"
 )
 
-install(TARGETS bearmax_moveit
+target_include_directories(face_follower PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+target_compile_features(face_follower PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+ament_target_dependencies(
+  face_follower
+  "moveit_ros_planning_interface"
+  "rclcpp"
+  "std_msgs"
+  "geometry_msgs"
+)
+
+install(TARGETS bearmax_moveit face_follower
   DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})

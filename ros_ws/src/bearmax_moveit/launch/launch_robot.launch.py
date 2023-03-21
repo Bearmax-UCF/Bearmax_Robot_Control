@@ -4,8 +4,10 @@ from launch_ros.actions import Node
 from launch.actions import ExecuteProcess
 from ament_index_python.packages import get_package_share_directory
 from moveit_configs_utils import MoveItConfigsBuilder
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import LaunchConfiguration
+from launch.conditions import IfCondition
 
 
 def generate_launch_description():
@@ -23,13 +25,16 @@ def generate_launch_description():
         )
     )
 
+    use_rviz = LaunchConfiguration("use_rviz")
+
     rviz_node = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
                 get_package_share_directory("bearmax_moveit_config"),
                 "launch",
                 "moveit_rviz.launch.py")
-        )
+        ),
+        condition=IfCondition(use_rviz)
     )
 
     static_tf = IncludeLaunchDescription(
@@ -85,6 +90,11 @@ def generate_launch_description():
 
     return LaunchDescription(
         [
+            DeclareLaunchArgument(
+                "use_rviz",
+                default_value="False",
+                description="Should Rviz be launched?"
+            ),
             rviz_node,
             static_tf,
             rsp,
