@@ -1,4 +1,6 @@
 arduino/build
+arduino/controller_board/build
+arduino/eye_screen_board/build
 ros_ws/build
 ros_ws/install
 ros_ws/log
