@@ -18,6 +18,7 @@ set(msg_files
   "msg/StackCommand.msg"
   "msg/WSPSensorDataRaw.msg"
   "msg/StressValue.msg"
+  "msg/Emotion.msg"
 )
 
 set(srv_files

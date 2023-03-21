@@ -24,7 +24,7 @@ setup(
     entry_points={
         'console_scripts': [
             'emotion_game = bearmax_emotion.emotion_game:main',
-            'emotion_recognizer = bearmax_emotion.emotion_recognizer:main'
+            'emotion_pipeline = bearmax_emotion.emotion_pipeline:main'
         ],
     },
 )

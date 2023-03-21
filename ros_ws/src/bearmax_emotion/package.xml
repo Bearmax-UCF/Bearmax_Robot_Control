@@ -11,6 +11,14 @@
   <depend>python3-opencv</depend>
   <depend>python-tensorflow-pip</depend>
   <depend>python3-scipy</depend>
+  <depend>python3-dlib-pip</depend>
+  <depend>python3-joblib</depend>
+  <depend>python3-numpy</depend>
+  <depend>cv_bridge</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>bearmax_msgs</depend>
 
   <exec_depend>v4l2_camera</exec_depend>
 
