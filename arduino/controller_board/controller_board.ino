@@ -39,7 +39,7 @@ int prev_target_state[Joint::NUMBER_OF_JOINTS];
 int target_state[Joint::NUMBER_OF_JOINTS];
 
 void setup() {
-  SerialConn.begin(BAUD_RATE);
+  SerialConn.begin(BAUD_RATE, SERIAL_8N1);
   while (!SerialConn) {
     ; // Wait for serial port to connect.
   }
@@ -97,7 +97,7 @@ void save_prev_target_state() {
 // Handles commands sent from serial port.
 void cmd_handler() {
   if (SerialConn.available() > 0) {
-    String cmd = SerialConn.readString();
+    String cmd = SerialConn.readStringUntil('\r');
     cmd.trim();
     if (cmd.startsWith("s ")) {
       String raw_values = cmd.substring(2);
@@ -105,13 +105,17 @@ void cmd_handler() {
       save_prev_target_state();
       deserialize_joint_states(raw_values, target_state);
       handle_new_target();
+      // Acknowledge command
+      SerialConn.print("ack: ");
+      SerialConn.println(cmd);
     } else if (cmd.startsWith("r")) {
       // WIP: If ros doesn't smooth positions well and we need to use velocity as well,
       //      then we need to read current_state, instead of target.
       String state_string = serialize_joint_states(target_state);
       SerialConn.println(state_string);
     } else {
-      SerialConn.println("[Error]: Invalid Command");
+      SerialConn.print("[Error]: Invalid Command: ");
+      SerialConn.println(cmd);
     }
   }
 }
