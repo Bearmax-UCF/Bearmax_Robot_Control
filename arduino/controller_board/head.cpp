@@ -51,14 +51,14 @@ void setupHead(){
   rightEarYawServo.write(90 + servoAdjust[6]); 
   rightEarPitchServo.write(90 + servoAdjust[7]); 
   
-  delay(1000);
+  //delay(1000);
 
   prevAngles[0] = prevAngles[1] = prevAngles[2] = prevAngles[3] = prevAngles[4] = prevAngles[5] = prevAngles[6] = prevAngles[7] = 90;
   //0-front, 1-left, 2-right, 3-patform yaw, 4-left ear yaw, 5-left ear pitch, 6-right ear yaw, 7-right ear pitch
   
   prevPlatformPos[0] = prevPlatformPos[1] = prevPlatformPos[2] = prevPlatformPos[3] = 0;
   
-  delay(1000);
+  //delay(1000);
 }
 
 void runHead(double z, double roll, double pitch, double yaw, int LEY, int LEP, int REY, int REP, double iters){

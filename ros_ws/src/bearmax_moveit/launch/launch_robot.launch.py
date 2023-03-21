@@ -11,8 +11,6 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 def generate_launch_description():
     moveit_config = (
         MoveItConfigsBuilder("robot", package_name="bearmax_moveit_config")
-#        .robot_description(file_path="config/robot.urdf.xacro")
-#        .trajectory_execution(file_path="config/ros2_controllers.yaml")
         .to_moveit_configs()
     )
 

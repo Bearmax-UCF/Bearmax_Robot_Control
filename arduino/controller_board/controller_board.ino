@@ -50,7 +50,7 @@ void setup() {
   // TODO: Run setup for arms & body
 
   // Send ready packet to master
-  SerialConn.println("ready");
+  //SerialConn.println("ready");
 }
 
 /**
@@ -106,16 +106,16 @@ void cmd_handler() {
       deserialize_joint_states(raw_values, target_state);
       handle_new_target();
       // Acknowledge command
-      SerialConn.print("ack: ");
-      SerialConn.println(cmd);
+      //SerialConn.print("ack: ");
+      //SerialConn.println(cmd);
     } else if (cmd.startsWith("r")) {
       // WIP: If ros doesn't smooth positions well and we need to use velocity as well,
       //      then we need to read current_state, instead of target.
       String state_string = serialize_joint_states(target_state);
-      SerialConn.println(state_string);
+      //SerialConn.println(state_string);
     } else {
-      SerialConn.print("[Error]: Invalid Command: ");
-      SerialConn.println(cmd);
+      //SerialConn.print("[Error]: Invalid Command: ");
+      //SerialConn.println(cmd);
     }
   }
 }
