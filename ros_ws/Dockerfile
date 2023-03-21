@@ -10,7 +10,9 @@ USER ros
 
 RUN mkdir -p /home/ros/.ros && \
     mkdir -p /home/ros/.rviz2 && \
-    mkdir -p /home/ros/ros_ws
+    mkdir -p /home/ros/ros_ws && \
+    echo ". /opt/ros/humble/setup.bash" >> /home/ros/.bashrc && \
+    echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> /home/ros/.bashrc
 
 # TODO: Install dependencies and ensure is ready and able to be run on robot
 

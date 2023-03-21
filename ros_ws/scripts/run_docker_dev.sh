@@ -14,6 +14,7 @@ docker run -it \
     -v $HOST_DIR:$WORK_DIR \
     -v $HOME/.ros:/home/ros/.ros \
     -v $HOME/.rviz2:/home/ros/.rviz2 \
+    -v /dev:/dev \
     -w $WORK_DIR \
     bearmax:ros \
     /bin/bash

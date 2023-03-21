@@ -1,0 +1,73 @@
+# MoveIt uses this configuration for controller management
+
+moveit_controller_manager: moveit_simple_controller_manager/MoveItSimpleControllerManager
+
+moveit_simple_controller_manager:
+  controller_names:
+    - ears_controller
+    - left_arm_controller
+    - right_arm_controller
+    - arms_controller
+    - head_platform_controller
+    - chassis_controller
+    - body_controller
+
+  ears_controller:
+    type: FollowJointTrajectory
+    action_ns: follow_joint_trajectory
+    default: true
+    joints:
+      - left_ear_rotator_joint
+      - left_ear_pitch_joint
+      - right_ear_rotator_joint
+      - right_ear_pitch_joint
+  left_arm_controller:
+    type: FollowJointTrajectory
+    action_ns: follow_joint_trajectory
+    default: true
+    joints:
+      - left_arm_shoulder_joint
+      - left_arm_rotator_joint
+      - left_arm_elbow_joint
+  right_arm_controller:
+    type: FollowJointTrajectory
+    action_ns: follow_joint_trajectory
+    default: true
+    joints:
+      - right_arm_shoulder_joint
+      - right_arm_rotator_joint
+      - right_arm_elbow_joint
+  arms_controller:
+    type: FollowJointTrajectory
+    action_ns: follow_joint_trajectory
+    default: true
+    joints:
+      - left_arm_shoulder_joint
+      - left_arm_rotator_joint
+      - left_arm_elbow_joint
+      - right_arm_shoulder_joint
+      - right_arm_rotator_joint
+      - right_arm_elbow_joint
+  head_platform_controller:
+    type: FollowJointTrajectory
+    action_ns: follow_joint_trajectory
+    default: true
+    joints:
+      - head_platform_pitch_joint
+      - head_platform_roll_joint
+      - head_platform_yaw_joint
+  chassis_controller:
+    type: FollowJointTrajectory
+    action_ns: follow_joint_trajectory
+    default: true
+    joints:
+      - chassis_joint
+  body_controller:
+    type: FollowJointTrajectory
+    action_ns: follow_joint_trajectory
+    default: true
+    joints:
+      - chassis_joint
+      - head_platform_pitch_joint
+      - head_platform_roll_joint
+      - head_platform_yaw_joint

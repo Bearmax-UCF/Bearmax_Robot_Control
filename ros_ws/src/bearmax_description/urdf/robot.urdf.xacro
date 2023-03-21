@@ -5,7 +5,9 @@
 
     <xacro:include filename="bearmax_description.urdf.xacro" />
 
+    <!--
     <xacro:include filename="hardware.ros2_control.xacro" />
+    -->
     <!--
     <xacro:if value="$(arg use_ros2_control)">
         <xacro:include filename="hardware.ros2_control.xacro" />

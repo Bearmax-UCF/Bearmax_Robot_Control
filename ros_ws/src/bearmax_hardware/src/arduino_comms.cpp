@@ -55,13 +55,13 @@ namespace bearmax_hardware
 
     void ArduinoComms::sendEmptyMsg()
     {
-        std::string res = sendMsg("\n");
+        std::string res = sendMsg("\r");
     }
 
     void ArduinoComms::getServoValues(std::vector<double>& v)
     {
 
-        std::string res = sendMsg("r\n");
+        std::string res = sendMsg("r\r");
         std::string delim = ":";
 
         size_t delim_idx = 0;
@@ -88,7 +88,7 @@ namespace bearmax_hardware
 
     }
 
-    void ArduinoComms::setServoValues(std::vector<double> v)
+    std::string ArduinoComms::setServoValues(std::vector<double> v)
     {
         std::stringstream ss;
         ss << "s ";
@@ -97,26 +97,55 @@ namespace bearmax_hardware
             if (i > 0) {
                 ss << ":";
             }
-            ss << (int)v[i];
+            ss << (int)(v[i] * 180 / 3.1416);
         }
 
-        ss << "\n";
+        ss << "\r";
 
-        sendMsg(ss.str());
+        return sendMsg(ss.str());
     }
 
     std::string ArduinoComms::sendMsg(const std::string &msg)
     {
         std::vector<uint8_t> tx_buff(msg.begin(), msg.end());
 
+ //       std::vector<uint8_t> rx_buff;
+
+        serial_driver_->port()->send(tx_buff);
+
+//        serial_driver_->port()->receive(rx_buff);
+
+//        std::string rx_str(rx_buff.begin(), rx_buff.end());
+
+        return "";
+    }
+
+    size_t ArduinoComms::testRead(std::vector<uint8_t> &res)
+    {
+        std::string msg = "r\r";
+        size_t n = 0;
+
+        std::vector<uint8_t> tx_buff(msg.begin(), msg.end());
+
         std::vector<uint8_t> rx_buff;
 
         serial_driver_->port()->send(tx_buff);
 
-        serial_driver_->port()->receive(rx_buff);
+        res.push_back(0);
 
-        std::string rx_str(rx_buff.begin(), rx_buff.end());
+        // Read until \n: 0x0a
+        /*
+        while(res.back() != 0x0a) {
+            size_t bl = serial_driver_->port()->receive(rx_buff);
+            res.insert(res.end(), rx_buff.begin(), rx_buff.end());
+        }
+        */
 
-        return rx_str;
+
+        //res.assign(rx_buff.begin(), rx_buff.end());
+
+        //std::string rx_str(rx_buff.begin(), rx_buff.end());
+
+        return n;
     }
 }
