@@ -11,10 +11,11 @@ find_package(ament_cmake REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 find_package(urdf REQUIRED)
+find_package(bearmax_hardware REQUIRED)
 
 # Install
 install(
-  DIRECTORY config gazebo launch ros2_control urdf
+  DIRECTORY config launch meshes urdf
   DESTINATION share/${PROJECT_NAME}
 )
 

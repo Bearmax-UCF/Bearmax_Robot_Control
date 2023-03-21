@@ -5,15 +5,14 @@
 #include <string>
 #include <vector>
 
-// TODO: Include libraries for BLE communication
-
 #include "hardware_interface/handle.hpp"
 #include "hardware_interface/hardware_info.hpp"
 #include "hardware_interface/system_interface.hpp"
 #include "hardware_interface/types/hardware_interface_return_values.hpp"
 #include "rclcpp/macros.hpp"
-#include "bearmax_hardware/visibility_control.h"
-#include "bearmax_hardware/arduino_comms.hpp"
+
+#include "visibility_control.h"
+#include "arduino_comms.hpp"
 
 struct Config {
     int baud_rate = 57600;
@@ -58,8 +57,8 @@ namespace bearmax_hardware
       Config cfg_;
       ArduinoComms arduino_;
 
-      std::vector<int> hw_servo_states_;
-      std::vector<int> hw_servo_cmds_;
+      std::vector<double> hw_servo_states_;
+      std::vector<double> hw_servo_cmds_;
   };
 }
 

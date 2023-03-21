@@ -1,0 +1,109 @@
+# This config file is used by ros2_control
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # Hz
+
+    ears_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+
+    left_arm_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+
+    right_arm_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+
+    arms_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+
+    head_platform_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+
+    chassis_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+
+    body_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+ears_controller:
+  ros__parameters:
+    joints:
+      - left_ear_rotator_joint
+      - left_ear_pitch_joint
+      - right_ear_rotator_joint
+      - right_ear_pitch_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+left_arm_controller:
+  ros__parameters:
+    joints:
+      - left_arm_shoulder_joint
+      - left_arm_rotator_joint
+      - left_arm_elbow_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+right_arm_controller:
+  ros__parameters:
+    joints:
+      - right_arm_shoulder_joint
+      - right_arm_rotator_joint
+      - right_arm_elbow_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+arms_controller:
+  ros__parameters:
+    joints:
+      - left_arm_shoulder_joint
+      - left_arm_rotator_joint
+      - left_arm_elbow_joint
+      - right_arm_shoulder_joint
+      - right_arm_rotator_joint
+      - right_arm_elbow_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+head_platform_controller:
+  ros__parameters:
+    joints:
+      - head_platform_pitch_joint
+      - head_platform_roll_joint
+      - head_platform_yaw_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+chassis_controller:
+  ros__parameters:
+    joints:
+      - chassis_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+body_controller:
+  ros__parameters:
+    joints:
+      - chassis_joint
+      - head_platform_pitch_joint
+      - head_platform_roll_joint
+      - head_platform_yaw_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position

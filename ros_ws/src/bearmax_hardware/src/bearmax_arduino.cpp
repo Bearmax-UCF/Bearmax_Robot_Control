@@ -28,13 +28,19 @@ hardware_interface::CallbackReturn BearmaxArduino::on_init(
     cfg_.timeout = std::stoi(info_.hardware_parameters["timeout"]);
 
     hw_servo_states_.resize(
-        info_.joints.size(), std::numeric_limits<int>::quiet_NaN());
+        info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
     hw_servo_cmds_.resize(
-        info_.joints.size(), std::numeric_limits<int>::quiet_NaN());
+        info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
     // Setup Arduino
-    arduino_.setup(cfg_.device, cfg._baud_rate, cfg.timeout);
+    arduino_.setup(cfg_.device, cfg_.baud_rate, cfg_.timeout);
+
+    if (arduino_.connected()) {
+        RCLCPP_INFO(rclcpp::get_logger("BearmaxArduino"), "Already connected!");
+    } else {
+        RCLCPP_INFO(rclcpp::get_logger("BearmaxArduino"), "Not yet connected!");
+    }
 
     RCLCPP_INFO(rclcpp::get_logger("BearmaxArduino"), "Finished Initialization");
 
@@ -52,7 +58,9 @@ std::vector<hardware_interface::StateInterface> BearmaxArduino::export_state_int
             hardware_interface::StateInterface(
                 info_.joints[i].name,
                 hardware_interface::HW_IF_POSITION,
-                &hw_servo_states_[i]));
+                &hw_servo_states_[i]
+            )
+        );
     }
 
     return state_interfaces;
@@ -67,7 +75,9 @@ std::vector<hardware_interface::CommandInterface> BearmaxArduino::export_command
             hardware_interface::CommandInterface(
                 info_.joints[i].name,
                 hardware_interface::HW_IF_POSITION,
-                &hw_servo_cmds_[i]));
+                &hw_servo_cmds_[i]
+            )
+        );
     }
 
     return command_interfaces;
@@ -76,6 +86,11 @@ std::vector<hardware_interface::CommandInterface> BearmaxArduino::export_command
 hardware_interface::CallbackReturn BearmaxArduino::on_activate(
     const rclcpp_lifecycle::State & /*previous_state*/)
 {
+    if (!arduino_.connected()) {
+        arduino_.connect();
+    }
+
+    // TODO: Maybe add an 'activate' command to arduino to power on the servos?
 
     // Set default values.
     for (auto i = 0u; i < hw_servo_states_.size(); i++) {
@@ -85,14 +100,41 @@ hardware_interface::CallbackReturn BearmaxArduino::on_activate(
         }
     }
 
+    /*
+    std::vector<uint8_t> res;
+
+    std::stringstream ss;
+
+    ss << res.size() << " ";
+
+    size_t n = arduino_.testRead(res);
+
+    ss << n << " " << res.size();
+
+    std::string sService = ss.str();
+
+    std::string res_str(res.begin(), res.end());
+
+    RCLCPP_INFO(rclcpp::get_logger("BearmaxArduino"), "Reading Servo Values!");
+    RCLCPP_INFO(rclcpp::get_logger("BearmaxArduino"), sService.c_str());
+    RCLCPP_INFO(rclcpp::get_logger("BearmaxArduino"), res_str.c_str());
+    */
+
+    RCLCPP_INFO(rclcpp::get_logger("BearmaxArduino"), "Activated!");
+
     return hardware_interface::CallbackReturn::SUCCESS;
 }
 
 hardware_interface::CallbackReturn BearmaxArduino::on_deactivate(
     const rclcpp_lifecycle::State & /*previous_state*/)
 {
+    if (arduino_.connected()) {
+        arduino_.disconnect();
+    }
 
-    // TODO: Close BLE connection
+    RCLCPP_INFO(rclcpp::get_logger("BearmaxArduino"), "Deactivated!");
+
+    // TODO: Maybe add an 'deactivate' command to arduino to power off the servos?
 
     return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -104,7 +146,13 @@ hardware_interface::return_type BearmaxArduino::read(
         return hardware_interface::return_type::ERROR;
     }
 
-    // TODO: Read servo data into hw_servo_states_
+//    RCLCPP_INFO(rclcpp::get_logger("BearmaxArduino"), "Reading Servo Values!");
+
+    //arduino_.getServoValues(hw_servo_states_);
+
+    for (uint i = 0; i < hw_servo_states_.size(); i++) {
+        hw_servo_states_[i] = hw_servo_cmds_[i];
+    }
 
     return hardware_interface::return_type::OK;
 }
@@ -116,7 +164,9 @@ hardware_interface::return_type BearmaxArduino::write(
         return hardware_interface::return_type::ERROR;
     }
 
-    arduino_.setServoValues(hw_servo_cmds_);
+//    RCLCPP_INFO(rclcpp::get_logger("BearmaxArduino"), "Writing Servo Values!");
+
+    std::string res = arduino_.setServoValues(hw_servo_cmds_);
 
     return hardware_interface::return_type::OK;
 }

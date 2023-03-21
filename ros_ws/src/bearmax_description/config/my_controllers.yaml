@@ -1,0 +1,35 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 30  # Hz
+    # use_sim_time: true
+    #
+    main_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+main_controller:
+  ros__parameters:
+    joints:
+      - chassis_joint
+      - left_ear_rotator_joint
+      - left_ear_pitch_joint
+      - right_ear_rotator_joint
+      - right_ear_pitch_joint
+      - left_arm_shoulder_joint
+      - left_arm_rotator_joint
+      - left_arm_elbow_joint
+      - right_arm_shoulder_joint
+      - right_arm_rotator_joint
+      - right_arm_elbow_joint
+      - head_platform_roll_joint
+      - head_platform_pitch_joint
+      - head_platform_yaw_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+
+joint_state_broadcaster:
+  ros__parameters: {}
