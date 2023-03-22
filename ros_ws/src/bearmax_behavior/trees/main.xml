@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="main">
+    <!-- ////////// -->
+    <BehaviorTree ID="main">
+        <ReactiveSequence>
+            <Condition ID="ShouldFollowFace"/>
+            <Action ID="FollowFace" name=""/>
+        </ReactiveSequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="FollowFace"/>
+        <Condition ID="ShouldFollowFace"/>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
