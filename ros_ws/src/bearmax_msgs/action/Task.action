@@ -1,5 +1,5 @@
 # Goal
-float32 radius
+string task_name
 ---
 # Result
 bool success
