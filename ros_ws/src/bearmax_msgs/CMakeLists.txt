@@ -14,6 +14,7 @@ find_package(rosidl_default_generators REQUIRED)
 find_package(std_msgs REQUIRED)
 
 set(msg_files
+  "msg/StackRequest.msg"
   "msg/StackCommand.msg"
   "msg/WSPSensorDataRaw.msg"
   "msg/StressValue.msg"
