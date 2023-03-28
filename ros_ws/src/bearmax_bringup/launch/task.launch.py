@@ -11,8 +11,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             os.path.join(
                 get_package_share_directory("bearmax_emotion"),
-                'camera.launch.py'),
-            output="log"
+                'camera.launch.py')
         )
     )
 
@@ -33,12 +32,12 @@ def generate_launch_description():
         )
     )
 
-    face_follower = IncludeLaunchDescription(
+    task_server = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
                 get_package_share_directory("bearmax_moveit"),
                 'launch',
-                'face_follower.launch.py')
+                'task_server.launch.py')
         )
     )
 
@@ -47,6 +46,6 @@ def generate_launch_description():
             camera,
             emotion_pipeline,
             base,
-            face_follower
+#            task_server
         ]
     )

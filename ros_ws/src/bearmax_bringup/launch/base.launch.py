@@ -10,7 +10,8 @@ def generate_launch_description():
 
     foxglove = Node(
         package="foxglove_bridge",
-        executable="foxglove_bridge"
+        executable="foxglove_bridge",
+        output="log"
     )
 
     # move_groups and ros2 controllers
@@ -25,7 +26,7 @@ def generate_launch_description():
 
     return LaunchDescription(
         [
-            foxglove,
+#            foxglove,
             control
         ]
     )

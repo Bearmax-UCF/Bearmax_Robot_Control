@@ -7,10 +7,12 @@ def generate_launch_description():
     camera = Node(
         package="v4l2_camera",
         executable="v4l2_camera_node",
-        output="screen",
+        output="log",
         parameters=[{
             "image_size": [640, 480],
-            "camera_frame_id": "camera_optical_link"
+            "time_per_frame": [1, 6],
+            "camera_frame_id": "camera_optical_link",
+            "video_device": "/dev/video2"
         }]
     )
 

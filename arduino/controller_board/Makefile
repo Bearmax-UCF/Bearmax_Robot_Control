@@ -1,4 +1,4 @@
-BOARD = arduino:sam:arduino_due_x
+BOARD = arduino:avr:mega
 
 build:
 	mkdir -p ./build

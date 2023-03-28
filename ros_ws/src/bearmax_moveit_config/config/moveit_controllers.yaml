@@ -11,6 +11,7 @@ moveit_simple_controller_manager:
     - head_platform_controller
     - chassis_controller
     - body_controller
+    - all_controller
 
   ears_controller:
     type: FollowJointTrajectory
@@ -71,3 +72,22 @@ moveit_simple_controller_manager:
       - head_platform_pitch_joint
       - head_platform_roll_joint
       - head_platform_yaw_joint
+  all_controller:
+    type: FollowJointTrajectory
+    action_ns: follow_joint_trajectory
+    default: true
+    joints:
+      - chassis_joint
+      - head_platform_pitch_joint
+      - head_platform_roll_joint
+      - head_platform_yaw_joint
+      - left_ear_rotator_joint
+      - left_ear_pitch_joint
+      - right_ear_rotator_joint
+      - right_ear_pitch_joint
+      - left_arm_shoulder_joint
+      - left_arm_rotator_joint
+      - left_arm_elbow_joint
+      - right_arm_shoulder_joint
+      - right_arm_rotator_joint
+      - right_arm_elbow_joint

@@ -18,7 +18,7 @@ const std::string HEAD_ROLL = "head_platform_roll_joint";
 const std::string HEAD_YAW = "head_platform_yaw_joint";
 
 // TODO: Use 'body' move_group once body is ready for testing.
-const std::string PLANNING_GROUP = "head_platform";
+const std::string PLANNING_GROUP = "all";
 
 class FaceFollower : public rclcpp::Node
 {
@@ -84,14 +84,32 @@ class FaceFollower : public rclcpp::Node
             // y- to down; y+ to up
             double delta_y = 0.5 - msg.y;
 
+            /*
+            auto const current_joints = [this]{
+                std::map<std::string, double> vals;
+
+                std::vector<std::string> names = move_group_->getJoints();
+                std::vector<double> values = move_group_->getCurrentJointValues();
+
+                vals[HEAD_ROLL] = values[find(names.begin(), names.end(), HEAD_ROLL) - names.begin()];
+                vals[HEAD_YAW] = values[find(names.begin(), names.end(), HEAD_YAW) - names.begin()];
+                vals[HEAD_PITCH] = values[find(names.begin(), names.end(), HEAD_PITCH) - names.begin()];
+
+                return vals;
+            }();
+
+            RCLCPP_INFO(this->get_logger(), "Current Platform: (%f, %f, %f)",
+                    current_joints.at(HEAD_ROLL), current_joints.at(HEAD_YAW), current_joints.at(HEAD_PITCH));
+            */
+
             // Set target Joint States
-            auto const target_joints = [&delta_x, &delta_y, &dist]{
+            auto const target_joints = [&delta_x, &delta_y, &dist, this]{
                 std::map<std::string, double> vals;
 
                 // These values are in radians
 //                vals[HEAD_ROLL] = PI / 3.0;
-                vals[HEAD_YAW] = asin(delta_x / dist);
-                vals[HEAD_PITCH] = asin(delta_y / dist);
+                vals[HEAD_YAW] = asin(delta_x / dist) + last_yaw;
+                vals[HEAD_PITCH] = asin(delta_y / dist) + last_pitch;
 
                 return vals;
             }();
@@ -107,6 +125,8 @@ class FaceFollower : public rclcpp::Node
             // Execute the plan
             if (success) {
                 move_group_->execute(plan);
+                last_yaw = target_joints.at(HEAD_YAW);
+                last_pitch = target_joints.at(HEAD_PITCH);
                 RCLCPP_INFO(this->get_logger(), "Successfully Executed!");
             } else {
                 RCLCPP_ERROR(this->get_logger(), "Planning Failed!");
@@ -121,6 +141,9 @@ class FaceFollower : public rclcpp::Node
         double last_x = 0;
         double last_y = 0;
         double last_z = 0;
+        // FIXME: Get current state, don't assume start is always 0
+        double last_yaw = 0;
+        double last_pitch = 0;
 };
 
 int main(int argc, char ** argv)

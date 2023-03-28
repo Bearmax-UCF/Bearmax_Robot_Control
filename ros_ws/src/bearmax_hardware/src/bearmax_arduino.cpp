@@ -10,6 +10,29 @@
 
 namespace bearmax_hardware
 {
+    // Used for array indexes! Don't change numbers!
+    enum Joint {
+        CHASSIS = 0,
+        HEAD_ROLL,
+        HEAD_PITCH,
+        HEAD_YAW,
+        LEFT_EAR_YAW,
+        LEFT_EAR_PITCH,
+        RIGHT_EAR_YAW,
+        RIGHT_EAR_PITCH,
+        LEFT_ARM_SHOULDER,
+        LEFT_ARM_ROTATOR,
+        LEFT_ARM_ELBOW,
+        RIGHT_ARM_SHOULDER,
+        RIGHT_ARM_ROTATOR,
+        RIGHT_ARM_ELBOW,
+        NUMBER_OF_JOINTS /* not a valid index! */
+    };
+
+#define CMD_INTERFACE(X,Y) command_interfaces.emplace_back( hardware_interface::CommandInterface(X, hardware_interface::HW_IF_POSITION, &hw_servo_cmds_[Y]))
+#define STATE_INTERFACE(X,Y) state_interfaces.emplace_back( hardware_interface::StateInterface(X, hardware_interface::HW_IF_POSITION, &hw_servo_states_[Y]))
+
+
 hardware_interface::CallbackReturn BearmaxArduino::on_init(
     const hardware_interface::HardwareInfo & info)
 {
@@ -52,7 +75,7 @@ std::vector<hardware_interface::StateInterface> BearmaxArduino::export_state_int
 {
     std::vector<hardware_interface::StateInterface> state_interfaces;
 
-
+/*
     for (uint i = 0; i < info_.joints.size(); i++) {
         state_interfaces.emplace_back(
             hardware_interface::StateInterface(
@@ -62,6 +85,22 @@ std::vector<hardware_interface::StateInterface> BearmaxArduino::export_state_int
             )
         );
     }
+    */
+
+    STATE_INTERFACE("chassis_joint", Joint::CHASSIS);
+    STATE_INTERFACE("head_platform_roll_joint", Joint::HEAD_ROLL);
+    STATE_INTERFACE("head_platform_pitch_joint", Joint::HEAD_PITCH);
+    STATE_INTERFACE("head_platform_yaw_joint", Joint::HEAD_YAW);
+    STATE_INTERFACE("left_ear_rotator_joint", Joint::LEFT_EAR_YAW);
+    STATE_INTERFACE("left_ear_pitch_joint", Joint::LEFT_EAR_PITCH);
+    STATE_INTERFACE("right_ear_rotator_joint", Joint::RIGHT_EAR_YAW);
+    STATE_INTERFACE("right_ear_pitch_joint", Joint::RIGHT_EAR_PITCH);
+    STATE_INTERFACE("left_arm_shoulder_joint", Joint::LEFT_ARM_SHOULDER);
+    STATE_INTERFACE("left_arm_rotator_joint", Joint::LEFT_ARM_ROTATOR);
+    STATE_INTERFACE("left_arm_elbow_joint", Joint::LEFT_ARM_ELBOW);
+    STATE_INTERFACE("right_arm_shoulder_joint", Joint::RIGHT_ARM_SHOULDER);
+    STATE_INTERFACE("right_arm_rotator_joint", Joint::RIGHT_ARM_ROTATOR);
+    STATE_INTERFACE("right_arm_elbow_joint", Joint::RIGHT_ARM_ELBOW);
 
     return state_interfaces;
 }
@@ -70,6 +109,7 @@ std::vector<hardware_interface::CommandInterface> BearmaxArduino::export_command
 {
     std::vector<hardware_interface::CommandInterface> command_interfaces;
 
+    /*
     for (uint i = 0; i < info_.joints.size(); i++) {
         command_interfaces.emplace_back(
             hardware_interface::CommandInterface(
@@ -79,6 +119,22 @@ std::vector<hardware_interface::CommandInterface> BearmaxArduino::export_command
             )
         );
     }
+    */
+
+    CMD_INTERFACE("chassis_joint", Joint::CHASSIS);
+    CMD_INTERFACE("head_platform_roll_joint", Joint::HEAD_ROLL);
+    CMD_INTERFACE("head_platform_pitch_joint", Joint::HEAD_PITCH);
+    CMD_INTERFACE("head_platform_yaw_joint", Joint::HEAD_YAW);
+    CMD_INTERFACE("left_ear_rotator_joint", Joint::LEFT_EAR_YAW);
+    CMD_INTERFACE("left_ear_pitch_joint", Joint::LEFT_EAR_PITCH);
+    CMD_INTERFACE("right_ear_rotator_joint", Joint::RIGHT_EAR_YAW);
+    CMD_INTERFACE("right_ear_pitch_joint", Joint::RIGHT_EAR_PITCH);
+    CMD_INTERFACE("left_arm_shoulder_joint", Joint::LEFT_ARM_SHOULDER);
+    CMD_INTERFACE("left_arm_rotator_joint", Joint::LEFT_ARM_ROTATOR);
+    CMD_INTERFACE("left_arm_elbow_joint", Joint::LEFT_ARM_ELBOW);
+    CMD_INTERFACE("right_arm_shoulder_joint", Joint::RIGHT_ARM_SHOULDER);
+    CMD_INTERFACE("right_arm_rotator_joint", Joint::RIGHT_ARM_ROTATOR);
+    CMD_INTERFACE("right_arm_elbow_joint", Joint::RIGHT_ARM_ELBOW);
 
     return command_interfaces;
 }

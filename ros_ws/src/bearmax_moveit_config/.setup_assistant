@@ -7,7 +7,7 @@ moveit_setup_assistant_config:
   package_settings:
     author_name: ros
     author_email: ros@todo.todo
-    generated_timestamp: 1678310004
+    generated_timestamp: 1679867181
   control_xacro:
     command:
       - position

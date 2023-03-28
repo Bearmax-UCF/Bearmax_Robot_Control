@@ -71,13 +71,14 @@ def generate_launch_description():
     # Load controllers
     load_controllers = []
     for controller in [
-        "ears_controller",
-        "left_arm_controller",
-        "right_arm_controller",
-        "arms_controller",
-        "head_platform_controller",
-        "chassis_controller",
-        "body_controller",
+#        "ears_controller",
+#        "left_arm_controller",
+#        "right_arm_controller",
+#        "arms_controller",
+#        "head_platform_controller",
+#        "chassis_controller",
+#        "body_controller",
+        "all_controller",
         "joint_state_broadcaster"
     ]:
         load_controllers += [

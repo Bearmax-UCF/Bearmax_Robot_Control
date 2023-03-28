@@ -10,7 +10,6 @@
                 <plugin>mock_components/GenericSystem</plugin>
                 -->
                 <plugin>bearmax_hardware/BearmaxArduino</plugin>
-                <!-- Using /dev/pts/7 in place of actual serial port -->
                 <param name="device">/dev/ttyACM0</param>
                 <param name="baud_rate">57600</param>
                 <param name="timeout">180000</param>
