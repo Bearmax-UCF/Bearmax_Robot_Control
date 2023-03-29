@@ -1,5 +1,5 @@
 # FROM nvcr.io/nvidia/l4t-tensorflow:r35.2.1-tf2.11-py3 as tensorflow
-FROM docker pull dustynv/ros:humble-pytorch-l4t-r35.2.1
+FROM dustynv/ros:humble-pytorch-l4t-r35.2.1
 
 # 
 # add the ROS deb repo to the apt sources list
