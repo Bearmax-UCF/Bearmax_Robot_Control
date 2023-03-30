@@ -115,19 +115,21 @@ class GameNode(Node):
         if action == "emotionStart":
             self._game.start()
         elif action == "emotionStop":
-            stats_str = self._game.end().to_json_str()
-            self.logger.info(f"Sending finished stats: {stats_str}")
-            stack_msg = new_req("emotionGameStats", stats_str)
-            self.to_stack_pub.publish(
-                stack_msg)
+            final_score_str = self._game.end().to_json_str()
+            self.send_to_stack("emotionGameStats", final_score_str)
+            self.logger.info(
+                f"Game ended successfully! Final score: {final_score_str}")
 
     def on_shutdown(self):
         if self._game.state.started:
             final_score_str = self._game.end().to_json_str()
-            self.to_stack_pub.publish(
-                new_req("emotionGameStats", final_score_str))
+            self.send_to_stack("emotionGameStats", final_score_str)
             self.logger.info(
-                f"Game ended with Final Score: {final_score_str}")
+                f"Game ended successfully! Final score: {final_score_str}")
+
+    def send_to_stack(self, event, data):
+        self.to_stack_pub.publish(
+            new_req(event, str(data)))
 
 
 def main(args=None):
