@@ -1,0 +1,18 @@
+FROM ros:humble-ros-base
+
+COPY ./scripts/install_rosdeps.sh install_rosdeps.sh
+RUN --mount=type=cache,target=/var/cache/apt,target=/root/.cache \
+    . /opt/ros/humble/setup.sh && \
+    apt-get update && \
+    apt-get install -y python3-pip ros-humble-foxglove-bridge && \
+    rosdep update && ./install_rosdeps.sh
+
+RUN mkdir -p /ros_ws
+WORKDIR /ros_ws
+
+COPY . .
+
+RUN . /opt/ros/humble/setup.sh && \
+    colcon build --merge-install --continue-on-error \
+    --cmake-args \
+    -DCMAKE_BUILD_TYPE=Release

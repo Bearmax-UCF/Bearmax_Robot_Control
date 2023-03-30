@@ -48,4 +48,3 @@ sudo -H apt-get install -yf ros-humble-moveit-ros-warehouse
 sudo -H apt-get install -yf ros-humble-moveit-setup-assistant
 sudo -H apt-get install -yf ros-humble-rviz-common
 sudo -H apt-get install -yf ros-humble-rviz-default-plugins
-sudo -H apt-get install -yf ros-humble-warehouse-ros-mongo
