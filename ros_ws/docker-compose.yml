@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  core:
+    image: bearmax/bearmax
+    build:
+      context: .
+      dockerfile: Dockerfile
+    network_mode: host
+#   Can set command to override the default
+#   command: ["ros2", "launch", "bearmax_bringup", "bearmax.launch.py"]
+    restart: always
+    privileged: true
+    environment:
+      ROS_DOMAIN_ID: 0
+      RMW_IMPLEMENTATION: rmw_cyclonedds_cpp
+    volumes:
+      - /dev:/dev
