@@ -1,13 +1,13 @@
 import rclpy
 from rclpy.node import Node
 
-from bearmax_msgs.msg import StackCommand
-
 import asyncio
 import socketio
 import ssl
 import aiohttp
 from importlib.resources import path
+
+from bearmax_msgs.msg import StackRequest
 from std_msgs.msg import String
 
 from .asyncrcl import spin
@@ -22,14 +22,14 @@ class StackConnector(Node):
         self.sio_ = sio
 
         self.publisher_ = self.create_publisher(
-            String, 'stackcommand', 10)
+            String, '/stack_out', 10)
 
         self.subscriber_ = self.create_subscription(
-            StackCommand, "to_stack", self.send_to_stack, 10)
+            StackRequest, "/stack_in", self.send_to_stack, 10)
 
         self._ws_url = self.declare_parameter('ws_url', DEFAULT_WS_URL)
 
-        self.log_info(self._ws_url.value)
+        self.logger.info(self._ws_url.value)
 
         self.register_handlers()
 
@@ -40,7 +40,8 @@ class StackConnector(Node):
         )
 
     async def send_to_stack(self, request):
-        self.log_info(
+        self.logger.info(str(request))
+        self.logger.info(
             f"[Sent to Stack]: {{event: {request.event}, data: {request.data}}}")
         await self.sio_.emit(request.event, request.data)
 
@@ -48,50 +49,54 @@ class StackConnector(Node):
         await self.sio_.connect(self.wsl_url)
         await self.sio_.wait()
 
-    @property
-    def wsl_url(self) -> str:
-        return self._ws_url.get_parameter_value().string_value
-
     def register_handlers(self):
         @self.sio_.event
         async def connect():
-            self.log_info('Connected to WebSocket Server')
+            self.logger.info('Connected to WebSocket Server')
 
         @self.sio_.event
         async def connect_error(data):
-            self.log_err(
+            self.logger.error(
                 f"Error trying to connect to WebSocket Server: {data}",
             )
 
         @self.sio_.event
         async def disconnect():
-            self.log_info('Disconnected from WebSocket Server')
+            self.logger.info('Disconnected from WebSocket Server')
 
         @self.sio_.event
         async def disconnecting():
-            self.log_info('Disconnecting from WebSocket Server')
+            self.logger.info('Disconnecting from WebSocket Server')
 
         @self.sio_.event
         async def emotionGame(action):
             if not action in ("start", "stop"):
-                self.log_err(
+                self.logger.error(
                     f"emotionGame handler expected string action and got {action}")
             # "emotionStart" or "emotionStop"
-            self.publisher_.publish("emotion" + action.capitalize())
+            self.publisher_.publish(self.to_msg(
+                "emotion" + action.capitalize()))
 
         @self.sio_.event
         async def recalibrate():
-            self.publisher_.publish("recalibrate")
+            self.publisher_.publish(self.to_msg("recalibrate"))
 
         @self.sio_.event
         async def ping():
-            self.log_info("Pong!")
+            self.logger.info("Pong!")
 
-    def log_info(self, msg):
-        self.get_logger().info(msg)
+    def to_msg(self, str_data):
+        str_obj = String()
+        str_obj.data = str_data
+        return str_obj
 
-    def log_err(self, msg):
-        self.get_logger().error(msg)
+    @property
+    def wsl_url(self) -> str:
+        return self._ws_url.get_parameter_value().string_value
+
+    @property
+    def logger(self):
+        return self.get_logger()
 
 
 async def run(args=None):
@@ -122,13 +127,6 @@ async def run(args=None):
 
         stack_connector.destroy_node()
     rclpy.shutdown()
-
-
-def createStackCommand(event, data) -> StackCommand:
-    msg = StackCommand()
-    msg.event = event
-    msg.data = data
-    return msg
 
 
 def main(args=None):
