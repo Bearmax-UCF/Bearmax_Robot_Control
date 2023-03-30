@@ -21,29 +21,32 @@ RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/r
 RUN mkdir -p /ros_ws
 WORKDIR /ros_ws
 
-COPY . .
-
-# install dependencies using rosdep
+# Install python dependencies
 RUN apt-get update && \
+    rosdep update && \
     apt-get install -y python3-pip && \
     pip3 install -U jetson-stats && \
-    rosdep init && \
-    rosdep update && \
-    rosdep install -i \
-    --from-path src \
-    --rosdistro humble -yr
-
-# Fix imutils bug
-RUN cd "$(pip show imutils | grep Location | awk '{ print $2 }')/imutils/face_utils" && \
+    # Fix imutils bug
+    cd "$(pip show imutils | grep Location | awk '{ print $2 }')/imutils/face_utils" && \
     sed -i 's@eyesCenter =.*@eyesCenter = (float((leftEyeCenter[0] + rightEyeCenter[0]) // 2),@;s@(leftEyeCenter\[1\] + rightEyeCenter\[1\]) // 2)@float((leftEyeCenter[1] + rightEyeCenter[1]) // 2))@' facealigner.py && \
     cd -
 
+# Install bearmax dependencies
+COPY ./scripts/install_rosdeps.sh ./install_rosdeps.sh
+RUN \
+    --mount=type=cache,target=/var/cache/apt \
+    apt-get update && ./install_rosdeps.sh
+
+COPY . .
+
 # Build Bearmax ROS
-RUN . /opt/ros/humble/setup.sh && \
-    colcon build --symlink-install \
+RUN \
+    --mount=type=cache,target=/ros_ws/build \
+    --mount=type=cache,target=/ros_ws/install \
+    . /opt/ros/humble/install/setup.sh && \
+    colcon build --symlink-install --continue-on-error \
     --cmake-args \
     -DCMAKE_BUILD_TYPE=Release
-
 
 # source ros from entrypoint
 RUN sed --in-place --expression \
