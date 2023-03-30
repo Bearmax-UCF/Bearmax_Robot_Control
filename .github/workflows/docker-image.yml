@@ -32,16 +32,14 @@ jobs:
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v4
-        working-directory: ./ros_ws
         with:
-          context: .
+          context: ./ros_ws
           push: ${{ github.actor != 'dependabot[bot]' }}
           tags: "${{ env.docker_image_name }}:latest"
           platforms: linux/arm64
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Docker Image digest
-        working-directory: ./ros_ws
         run: |
           echo ${{ steps.docker_build.outputs.digest }}
       - name: Save Docker Image
