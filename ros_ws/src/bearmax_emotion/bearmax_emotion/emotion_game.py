@@ -53,7 +53,7 @@ class GameNode(Node):
         timer_period = 0.5  # seconds
         self._timer = self.create_timer(timer_period, self.publish_state)
 
-        self._game = EmotionGame(self.logger)
+        self._game = EmotionGame(self.logger, self.send_to_stack)
         self._game.registerCallback("new_round", self.handle_new_round)
         self._game.registerCallback("on_win", self.handle_on_win)
         self._game.registerCallback("on_lose", self.handle_on_lose)
@@ -71,7 +71,9 @@ class GameNode(Node):
     @property
     def logger(self): return self.get_logger()
 
+    # TODO: Is this dead code?
     def handle_new_round(self):
+        self.send_to_stack("")
         self.logger.warn("New Round task not yet implemented!")
         self._last_emotion = None
         self._last_emotion_cb_time = None
@@ -79,10 +81,12 @@ class GameNode(Node):
 
     def handle_on_win(self):
         self.round_in_progress = False
+        self.send_to_stack("speak", "Great job!")
         self.logger.warn("Win task not yet implemented!")
 
     def handle_on_lose(self, detected_emotion: str, target_emotion: str):
         self.round_in_progress = False
+        self.send_to_stack("speak", "That's OK! Let's try another.")
         self.logger.warn("Lose task not yet implemented!")
 
     def publish_state(self):
@@ -114,11 +118,13 @@ class GameNode(Node):
         self.logger.info(f"Received from stack: {action}")
         if action == "emotionStart":
             self._game.start()
+            self.send_to_stack("speak", "Let's play a game!")
         elif action == "emotionStop":
             final_score_str = self._game.end().to_json_str()
             self.send_to_stack("emotionGameStats", final_score_str)
             self.logger.info(
                 f"Game ended successfully! Final score: {final_score_str}")
+            self.send_to_stack("speak", "Thanks for playing!")
 
     def on_shutdown(self):
         if self._game.state.started:
