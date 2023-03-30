@@ -1,3 +1,8 @@
 build
 install
 log
+Dockerfile
+Dockerfile.dev
+Makefile
+docker-compose.yml
+.dockerignore
