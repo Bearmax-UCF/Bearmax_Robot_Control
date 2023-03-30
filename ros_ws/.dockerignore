@@ -3,6 +3,7 @@ install
 log
 Dockerfile
 Dockerfile.dev
+Dockerfile.ros
 Makefile
 docker-compose.yml
 .dockerignore
