@@ -1,9 +1,13 @@
 import rclpy
 from rclpy.node import Node
-from bearmax_msgs.msg import Emotion, EmotionGameState, EmotionScores
+
+from bearmax_msgs.msg import Emotion, EmotionGameState, EmotionScores, StackRequest
+from std_msgs.msg import String
+
 from bearmax_emotion.emotion_lib.src.gameNode import EmotionGame
-from bearmax_emotion.utils import state_to_msg
+from bearmax_emotion.utils import state_to_msg, new_req
 from datetime import datetime, timedelta
+import json
 
 
 # TODO: Handle pause/resume/start/end as service server
@@ -17,12 +21,19 @@ class GameNode(Node):
 
         self._last_emotion_cb_time = None
         self._last_emotion = None
-        self.round_in_progress = True
+        self.round_in_progress = False
 
         self.emotion_in_sub = self.create_subscription(
             Emotion,
             "/emotion_in",
-            self.callback,
+            self.emotionCallback,
+            1
+        )
+
+        self.stack_sub = self.create_subscription(
+            String,
+            "/stack_out",
+            self.stackCallback,
             1
         )
 
@@ -32,10 +43,17 @@ class GameNode(Node):
             "/state_out",
             1
         )
+
+        self.to_stack_pub = self.create_publisher(
+            StackRequest,
+            "/stack_in",
+            1
+        )
+
         timer_period = 0.5  # seconds
         self._timer = self.create_timer(timer_period, self.publish_state)
 
-        self._game = EmotionGame()
+        self._game = EmotionGame(self.logger)
         self._game.registerCallback("new_round", self.handle_new_round)
         self._game.registerCallback("on_win", self.handle_on_win)
         self._game.registerCallback("on_lose", self.handle_on_lose)
@@ -54,24 +72,26 @@ class GameNode(Node):
     def logger(self): return self.get_logger()
 
     def handle_new_round(self):
-        self.logger.warn("New Round task not implemented!")
+        self.logger.warn("New Round task not yet implemented!")
         self._last_emotion = None
         self._last_emotion_cb_time = None
         self.round_in_progress = True
 
     def handle_on_win(self):
         self.round_in_progress = False
-        self.logger.warn("Win task not implemented!")
+        self.logger.warn("Win task not yet implemented!")
 
     def handle_on_lose(self, detected_emotion: str, target_emotion: str):
         self.round_in_progress = False
-        self.logger.warn("Lose task not implemented!")
+        self.logger.warn("Lose task not yet implemented!")
 
     def publish_state(self):
-        self.state_out_pub.publish(state_to_msg(self._game.state))
+        # self.state_out_pub.publish(state_to_msg(self._game.state))
+        pass  # TODO: Fix error "The 'target_emotion' field must be of type 'str'"
 
-    def callback(self, data):
-        if not self.round_in_progress: return
+    def emotionCallback(self, data):
+        if not self.round_in_progress:
+            return
 
         if self._last_emotion_cb_time is None:
             self._last_emotion_cb_time = datetime.now()
@@ -89,11 +109,25 @@ class GameNode(Node):
             self._last_emotion_cb_time = datetime.now()
             self._last_emotion = data.emotion
 
+    def stackCallback(self, data):
+        action = data.data
+        self.logger.info(f"Received from stack: {action}")
+        if action == "emotionStart":
+            self._game.start()
+        elif action == "emotionStop":
+            stats_str = self._game.end().to_json_str()
+            self.logger.info(f"Sending finished stats: {stats_str}")
+            stack_msg = new_req("emotionGameStats", stats_str)
+            self.to_stack_pub.publish(
+                stack_msg)
+
     def on_shutdown(self):
         if self._game.state.started:
-            final_score = self._game.end()
+            final_score_str = self._game.end().to_json_str()
+            self.to_stack_pub.publish(
+                new_req("emotionGameStats", final_score_str))
             self.logger.info(
-                f"Game ended with Final Score: {final_score}")
+                f"Game ended with Final Score: {final_score_str}")
 
 
 def main(args=None):
@@ -101,10 +135,15 @@ def main(args=None):
 
     emotion_game = GameNode()
 
-    try:
-        rclpy.spin(emotion_game)
-    except:
-        # The context is already gone at this point
-        emotion_game.on_shutdown()
+    # try:
+    #     rclpy.spin(emotion_game)
+    # except:
+    #     # The context is already gone at this point
+    #     emotion_game.on_shutdown()
+    # rclpy.try_shutdown()
 
-    rclpy.try_shutdown()
+    while rclpy.ok():
+        rclpy.spin_once(emotion_game)
+
+    emotion_game.destroy_node()
+    rclpy.shutdown()

@@ -45,9 +45,9 @@ class EmotionPipeline(Node):
         self.frame_count = 0
         self.tt = 0
 
-        self.old_head_pos_x = 0.0 
-        self.old_head_pos_y = 0.0 
-        self.old_head_pos_z = 0.0 
+        self.old_head_pos_x = 0.0
+        self.old_head_pos_y = 0.0
+        self.old_head_pos_z = 0.0
 
     @property
     def logger(self):
@@ -57,14 +57,15 @@ class EmotionPipeline(Node):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
 
-
         except CvBridgeError as e:
             self.logger.error(e)
 
         try:
             self.frame_count += 1
 
-            _tt, out_image, head_pos, emotion = run_pipeline(cv_image, self.frame_count, self.tt)
+            _tt, out_image, head_pos, emotion = run_pipeline(
+                cv_image, self.frame_count, self.tt)
+            # self.logger.info(f"Detected: {emotion}")
 
             self.tt = _tt
 
@@ -82,9 +83,9 @@ class EmotionPipeline(Node):
 #                self.old_head_pos_y = float(head_pos[1])
 #                self.old_head_pos_z = float(head_pos[2])
 
-            if (float(head_pos[0]) != 0 and 
+            if (float(head_pos[0]) != 0 and
                 float(head_pos[1]) != 0 and
-                float(head_pos[2]) != 0):
+                    float(head_pos[2]) != 0):
                 # Publish Head Position
                 head_pos_to_pub = Point()
                 head_pos_to_pub.x = float(head_pos[0])
@@ -94,7 +95,8 @@ class EmotionPipeline(Node):
                 self.head_out_pub.publish(head_pos_to_pub)
 
                 pose = PoseStamped()
-                pose.header.stamp.sec, pose.header.stamp.nanosec = self.get_clock().now().seconds_nanoseconds()
+                pose.header.stamp.sec, pose.header.stamp.nanosec = self.get_clock(
+                ).now().seconds_nanoseconds()
                 pose.header.frame_id = "camera_optical_link"
                 pose.pose.position.x = float(head_pos[0]) - 0.5
                 pose.pose.position.y = (1 - float(head_pos[1])) - 0.5
@@ -124,10 +126,13 @@ class EmotionPipeline(Node):
         except CvBridgeError as e:
             self.logger.error(e)
 
+
 def main(args=None):
     rclpy.init(args=args)
 
     emotion_pipeline = EmotionPipeline()
+    emotion_pipeline.logger.info("Pipeline running")
+
     while rclpy.ok():
         rclpy.spin_once(emotion_pipeline)
 
