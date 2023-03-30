@@ -32,6 +32,7 @@ jobs:
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v4
+        working-directory: ./ros_ws
         with:
           context: .
           push: ${{ github.actor != 'dependabot[bot]' }}
@@ -40,12 +41,15 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Docker Image digest
+        working-directory: ./ros_ws
         run: |
           echo ${{ steps.docker_build.outputs.digest }}
       - name: Save Docker Image
+        working-directory: ./ros_ws
         run: |
           docker save -o bearmax.img "${{ env.docker_image_name }}:latest"
       - name: Upload Image artifact
+        working-directory: ./ros_ws
         uses: actions/upload-artifact@v3
         with:
           name: bearmax.img
