@@ -34,7 +34,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./ros_ws
-          file: ./ros_ws/Dockerfile.ros
+          file: ./ros_ws/Dockerfile.ros_build
           push: ${{ github.actor != 'dependabot[bot]' }}
           tags: "${{ env.docker_image_name }}:latest"
           platforms: linux/arm64
