@@ -31,30 +31,30 @@ def generate_launch_description():
         )
     )
 
-    # base = IncludeLaunchDescription(
-    #     PythonLaunchDescriptionSource(
-    #         os.path.join(
-    #             get_package_share_directory("bearmax_bringup"),
-    #             'launch',
-    #             'base.launch.py')
-    #     )
-    # )
+    base = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory("bearmax_bringup"),
+                'launch',
+                'base.launch.py')
+        )
+    )
 
-    # task_server = IncludeLaunchDescription(
-    #     PythonLaunchDescriptionSource(
-    #         os.path.join(
-    #             get_package_share_directory("bearmax_moveit"),
-    #             'launch',
-    #             'task_server.launch.py')
-    #     )
-    # )
+    task_server = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory("bearmax_moveit"),
+                'launch',
+                'task_server.launch.py')
+        )
+    )
 
     return LaunchDescription(
         [
             camera,
             emotion_pipeline,
-            emotion_game
-            # base,
-            #            task_server
+            #emotion_game
+            base,
+            task_server
         ]
     )
