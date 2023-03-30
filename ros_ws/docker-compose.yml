@@ -15,3 +15,17 @@ services:
       RMW_IMPLEMENTATION: rmw_cyclonedds_cpp
     volumes:
       - /dev:/dev
+  foxglove:
+    image: bearmax/bearmax
+    depends_on:
+      - core
+    build:
+      context: .
+      dockerfile: Dockerfile
+    network_mode: host
+#   Can set command to override the default
+    command: ["ros2", "run", "foxglove_bridge", "foxglove_bridge"]
+    restart: always
+    environment:
+      ROS_DOMAIN_ID: 0
+      RMW_IMPLEMENTATION: rmw_cyclonedds_cpp

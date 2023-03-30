@@ -4,6 +4,9 @@
 
 //#include "./eyes_closed.h"
 
+// Only define on the left eye!!!
+#define LEFT_EYE
+
 #define BAUD_RATE 9600
 
 #define TFT_WIDTH  128
@@ -18,6 +21,11 @@
 #define MAGENTA 0xF81F
 #define YELLOW  0xFFE0  
 #define WHITE   0xFFFF
+#define BROWN   0x6227
+//60463B
+// 96, 70, 59
+
+#define EYELID_COLOR WHITE
 
 #define TFT_CS 10
 #define TFT_RST 9
@@ -84,26 +92,29 @@ bool doBlink = false;
 void blink() {
   // CLOSE EYE
   for (int i=1; i<=FRAMES; i++) {
-   tft.fillRect(0, 4*i, TFT_WIDTH, 4, WHITE);
-   tft.fillRect(0, TFT_HEIGHT - (4*i), TFT_WIDTH, 4, WHITE);
+   tft.fillRect(4*i, 0, 4, TFT_HEIGHT, EYELID_COLOR);
+   tft.fillRect(TFT_WIDTH - (4*i), 0, 4, TFT_HEIGHT, EYELID_COLOR);
    delay(FPS); 
   }
   delay(250); // How long to hold eyelids shut
   // OPEN EYE
   for (int i=FRAMES; i>=1; i--) {
-   tft.fillRect(0, 4*i, TFT_WIDTH, 4, BLACK);
-   tft.fillRect(0, TFT_HEIGHT - (4*i), TFT_WIDTH, 4, BLACK);
+   tft.fillRect(4*i, 0, 4, TFT_HEIGHT, BLACK);
+   tft.fillRect(TFT_WIDTH - (4*i), 0, 4, TFT_HEIGHT, BLACK);
    delay(FPS); 
   }
 }
 
 void happy() {
   // Bottom Eyelid
-  tft.fillRect(0, TFT_HEIGHT - 60, TFT_WIDTH, TFT_HEIGHT / 2, WHITE);
+  #ifdef LEFT_EYE
+  tft.fillRect(0, 0, TFT_WIDTH / 2, TFT_HEIGHT, EYELID_COLOR);
+  #else
+  tft.fillRect(TFT_WIDTH - 60, 0, TFT_WIDTH / 2, TFT_HEIGHT, EYELID_COLOR);
+  #endif
 }
 
 void loop() {
-  /*
   handle_cmd();
 
   if (millis() - previousMillis >= blinkInterval) {
@@ -127,7 +138,7 @@ void loop() {
       happy();
     default:
       break;
-  }*/
+  }
 }
 
 void fillAngledRect(int16_t x, int16_t y, int16_t deg, int16_t w, int16_t h, uint16_t color) {

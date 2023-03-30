@@ -69,6 +69,7 @@ class MoveitTaskServer : public rclcpp::Node
         double last_y = 0;
         double last_z = 0;
         bool is_quizzical = false;
+        double head_position_error = 0.02;
         // FIXME: Get current state, don't assume start is always 0
         JointValueMap last_state;
         double last_yaw = 0;
@@ -133,6 +134,8 @@ class MoveitTaskServer : public rclcpp::Node
         /********** Task Executors **********/
         DEFINE_TASK_EXECUTOR(happy);
         DEFINE_TASK_EXECUTOR(quizzical);
+        DEFINE_TASK_EXECUTOR(sad);
+        DEFINE_TASK_EXECUTOR(angry);
 };
 
 #endif

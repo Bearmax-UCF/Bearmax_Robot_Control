@@ -5,6 +5,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp_action/rclcpp_action.hpp>
 #include <moveit/move_group_interface/move_group_interface.h>
+#include <unistd.h>
 
 #include "bearmax_msgs/action/task.hpp"
 
@@ -37,10 +38,14 @@ MoveitTaskServer::MoveitTaskServer()
 
     foot_z = this->get_parameter("foot_z").as_double();
 
+    head_position_error = this->get_parameter("head_position_error").as_double();
+
     // Register task executors,
     // task executor functions must be named execute_<task_name>
     REGISTER_TASK(happy);
     REGISTER_TASK(quizzical);
+    REGISTER_TASK(sad);
+    REGISTER_TASK(angry);
 }
 
 /* ========== Task Executors ========== */
@@ -76,19 +81,34 @@ void MoveitTaskServer::execute_happy(
     auto const target_list = [this]{
         std::vector<JointValueMap> tlst;
 
+        auto stateOne = JointValueMap{
+            {L_EAR_PITCH, (PI / 6.0)},
+            {R_EAR_PITCH, (PI / -6.0)}
+        };
+
         // Undo quizzical state if needed
         if (is_quizzical) {
-            tlst.emplace_back(JointValueMap{
-                {HEAD_ROLL, 0.0}
-            });
+            stateOne.insert(std::pair{HEAD_ROLL, 0.0});
         }
 
-        tlst.emplace_back(JointValueMap{
-            {HEAD_ROLL, PI / 6.0}
-        });
+        tlst.emplace_back(stateOne);
 
+        auto stateTwo = JointValueMap{
+            {L_EAR_PITCH, (PI / -6.0)},
+            {R_EAR_PITCH, (PI / 6.0)}
+        };
+
+        tlst.emplace_back(stateTwo);
+        // Waggle them ears back and forth!
+        tlst.emplace_back(stateOne);
+        tlst.emplace_back(stateTwo);
+        tlst.emplace_back(stateOne);
+        tlst.emplace_back(stateTwo);
+
+        // Now Reset ears back to normal
         tlst.emplace_back(JointValueMap{
-            {HEAD_ROLL, 0.0}
+            {L_EAR_PITCH, 0.0},
+            {R_EAR_PITCH, 0.0}
         });
 
         return tlst;
@@ -113,6 +133,117 @@ void MoveitTaskServer::execute_happy(
     result->success = true;
     RESUME_FACE_FOLLOWER(happy);
     goal_handle->succeed(result);
+}
+
+// Task: sad
+void MoveitTaskServer::execute_sad(
+    const std::shared_ptr<GoalHandleTask> goal_handle)
+{
+    RCLCPP_INFO(this->get_logger(), "Executing goal: sad");
+    rclcpp::Rate loop_rate(1);
+
+    auto stateOne = JointValueMap{
+        {L_EAR_PITCH, (PI / 3.0)},
+        {L_EAR_ROT, (PI / 2.0)},
+        {R_EAR_PITCH, (PI / -3.0)},
+        {R_EAR_ROT, (PI / 2.0)},
+        {HEAD_PITCH, (PI / -4.0)}
+    };
+
+    // Undo quizzical state if needed
+    if (is_quizzical) {
+        stateOne.insert(std::pair{HEAD_ROLL, 0.0});
+    }
+
+    move_group_->setJointValueTarget(stateOne);
+    move_group_->move();
+
+    RCLCPP_INFO(this->get_logger(),
+            "Staying sad until sadness is cancelled on twitter.");
+
+    // Wait for action to be cancelled
+    while (!goal_handle->is_canceling()) {
+        loop_rate.sleep();
+    }
+
+    RCLCPP_INFO(this->get_logger(), "Took anti-depressants, no longer sad!");
+
+    // Now Reset everything back to normal
+    auto stateLast = JointValueMap{
+        {L_EAR_PITCH, 0.0},
+        {R_EAR_PITCH, 0.0},
+        {L_EAR_ROT, 0.0},
+        {R_EAR_ROT, 0.0},
+        {HEAD_PITCH, 0.0}
+    };
+
+    move_group_->setJointValueTarget(stateLast);
+    move_group_->move();
+
+    auto result = std::make_shared<Task::Result>();
+    result->success = true;
+    RESUME_FACE_FOLLOWER(sad);
+    if (goal_handle->is_canceling()) {
+        goal_handle->canceled(result);
+    } else {
+        goal_handle->succeed(result);
+    }
+}
+
+// Task: angry
+void MoveitTaskServer::execute_angry(
+    const std::shared_ptr<GoalHandleTask> goal_handle)
+{
+    RCLCPP_INFO(this->get_logger(), "Executing goal: angry");
+    rclcpp::Rate loop_rate(1);
+
+    auto stateOne = JointValueMap{
+        {L_EAR_PITCH, (PI / -3.0)},
+        {L_EAR_ROT, (PI / 2.0)},
+        {R_EAR_PITCH, (PI / 3.0)},
+        {R_EAR_ROT, (PI / 2.0)},
+        {HEAD_PITCH, (PI / -4.0)}
+    };
+
+    // Undo quizzical state if needed
+    if (is_quizzical) {
+        stateOne.insert(std::pair{HEAD_ROLL, 0.0});
+    }
+
+    move_group_->setJointValueTarget(stateOne);
+    move_group_->move();
+
+    RCLCPP_INFO(this->get_logger(),
+            "Staying angry until cancelled!");
+
+    // Wait for action to be cancelled
+    while (!goal_handle->is_canceling()) {
+        loop_rate.sleep();
+    }
+
+    RCLCPP_INFO(this->get_logger(),
+            "Took a chill pill, no longer angry.");
+
+    // Now Reset everything back to normal
+    auto stateLast = JointValueMap{
+        {L_EAR_PITCH, 0.0},
+        {R_EAR_PITCH, 0.0},
+        {L_EAR_ROT, 0.0},
+        {R_EAR_ROT, 0.0},
+        {HEAD_PITCH, 0.0}
+    };
+
+    move_group_->setJointValueTarget(stateLast);
+    move_group_->move();
+
+    auto result = std::make_shared<Task::Result>();
+    result->success = true;
+    RESUME_FACE_FOLLOWER(angry);
+    if (goal_handle->is_canceling()) {
+        goal_handle->canceled(result);
+    } else {
+        goal_handle->succeed(result);
+    }
 }
 
 /* ==================================== */

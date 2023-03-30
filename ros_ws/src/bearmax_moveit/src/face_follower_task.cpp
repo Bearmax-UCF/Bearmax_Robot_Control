@@ -1,4 +1,5 @@
 #include "bearmax_moveit/task_server.hpp"
+#include <cmath>
 
 void MoveitTaskServer::face_follower(const geometry_msgs::msg::Point & msg)
 {
@@ -21,6 +22,14 @@ void MoveitTaskServer::face_follower(const geometry_msgs::msg::Point & msg)
     double delta_x = msg.x - 0.5;
     // y- to down; y+ to up
     double delta_y = 0.5 - msg.y;
+
+    // Don't update head position if we're only off +-head_position_error
+    if (abs(delta_x) <= head_position_error &&
+            abs(delta_y) <= head_position_error) {
+        RCLCPP_INFO(this->get_logger(),
+                "Head did not move enough! Not changing position.");
+        return;
+    }
 
     /*
        auto const current_joints = [this]{
