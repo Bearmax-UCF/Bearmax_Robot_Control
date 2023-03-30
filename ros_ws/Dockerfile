@@ -14,35 +14,42 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
-RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
-RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
+#RUN echo -e "Package: *\nPin: release a=focal-backports\nPin-Priority: 500" | tee /etc/apt/preferences >/dev/null
 
-# Bring over our code
-RUN mkdir -p /ros_ws
-WORKDIR /ros_ws
+RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu jammy main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
 
 # Install python dependencies
 RUN apt-get update && \
     rosdep update && \
     apt-get install -y python3-pip && \
-    pip3 install -U jetson-stats && \
+    pip3 install -U jetson-stats imutils && \
     # Fix imutils bug
-    cd "$(pip show imutils | grep Location | awk '{ print $2 }')/imutils/face_utils" && \
+    cd "$(pip3 show imutils | grep Location | awk '{ print $2 }')/imutils/face_utils" && \
     sed -i 's@eyesCenter =.*@eyesCenter = (float((leftEyeCenter[0] + rightEyeCenter[0]) // 2),@;s@(leftEyeCenter\[1\] + rightEyeCenter\[1\]) // 2)@float((leftEyeCenter[1] + rightEyeCenter[1]) // 2))@' facealigner.py && \
     cd -
 
 # Install bearmax dependencies
 COPY ./scripts/install_rosdeps.sh ./install_rosdeps.sh
 RUN \
-    --mount=type=cache,target=/var/cache/apt \
+#    --mount=type=cache,target=/var/cache/apt \
+    . /opt/ros/humble/install/setup.sh && \
     apt-get update && ./install_rosdeps.sh
+
+# Bring over our code
+RUN mkdir -p /ros_ws
+WORKDIR /ros_ws
 
 COPY . .
 
+RUN . /opt/ros/humble/install/setup.sh && \
+    apt-get update && rosdep update && \
+    rosdep install -i --from-path ./src \
+    --rosdistro humble -yr
+
 # Build Bearmax ROS
 RUN \
-    --mount=type=cache,target=/ros_ws/build \
-    --mount=type=cache,target=/ros_ws/install \
+#    --mount=type=cache,target=/ros_ws/build,target=/ros_ws/install \
     . /opt/ros/humble/install/setup.sh && \
     colcon build --symlink-install --continue-on-error \
     --cmake-args \
