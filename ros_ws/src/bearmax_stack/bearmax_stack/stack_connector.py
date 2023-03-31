@@ -1,3 +1,6 @@
+#from gevent import monkey
+#monkey.patch_all()
+
 import rclpy
 from rclpy.node import Node
 
@@ -12,7 +15,7 @@ from std_msgs.msg import String
 
 from .asyncrcl import spin
 
-DEFAULT_WS_URL = 'https://localhost:8080'
+DEFAULT_WS_URL = 'http://137.184.110.53:443'
 
 
 class StackConnector(Node):
@@ -22,10 +25,10 @@ class StackConnector(Node):
         self.sio_ = sio
 
         self.publisher_ = self.create_publisher(
-            String, '/stack_out', 10)
+            String, '/stack_out', 1)
 
         self.subscriber_ = self.create_subscription(
-            StackRequest, "/stack_in", self.send_to_stack, 10)
+            StackRequest, "/stack_in", self.send_to_stack, 1)
 
         self._ws_url = self.declare_parameter('ws_url', DEFAULT_WS_URL)
 
@@ -69,6 +72,10 @@ class StackConnector(Node):
             self.logger.info('Disconnecting from WebSocket Server')
 
         @self.sio_.event
+        async def speak(msg):
+            self.publisher_.publish(self.to_msg(f"ACK: [{msg}]"))
+
+        @self.sio_.event
         async def emotionGame(action):
             if not action in ("start", "stop"):
                 self.logger.error(
@@ -101,14 +108,17 @@ class StackConnector(Node):
 
 async def run(args=None):
     rclpy.init(args=args)
+    """
     ssl_context = ssl.create_default_context()
 
     with path("bearmax_stack.ssl", "server-crt.pem") as SCERT_PATH:
         ssl_context.load_verify_locations(SCERT_PATH)
     with path("bearmax_stack.ssl", "client-crt.pem") as CCERT_PATH, path("bearmax_stack.ssl", "client-key.pem") as CKEY_PATH:
         ssl_context.load_cert_chain(certfile=CCERT_PATH, keyfile=CKEY_PATH)
+    """
 
-    connector = aiohttp.TCPConnector(ssl=ssl_context)
+    #connector = aiohttp.TCPConnector(ssl=ssl_context)
+    connector = aiohttp.TCPConnector()
     async with aiohttp.ClientSession(connector=connector) as http_session:
         sio = socketio.AsyncClient(http_session=http_session, logger=True)
 

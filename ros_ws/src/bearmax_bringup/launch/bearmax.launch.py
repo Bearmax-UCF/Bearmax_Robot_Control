@@ -45,7 +45,6 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             os.path.join(
                 get_package_share_directory("bearmax_emotion"),
-                'launch',
                 'game.launch.py'
             )
         )
@@ -67,7 +66,7 @@ def generate_launch_description():
             emotion_pipeline,
             base,
             task_server,
-            emotion_game,
+#            emotion_game,
 #            stack_connector
         ]
     )
