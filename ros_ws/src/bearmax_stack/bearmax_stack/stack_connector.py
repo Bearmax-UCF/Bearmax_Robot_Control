@@ -1,5 +1,5 @@
-#from gevent import monkey
-#monkey.patch_all()
+import nest_asyncio
+nest_asyncio.apply()
 
 import rclpy
 from rclpy.node import Node
@@ -15,7 +15,7 @@ from std_msgs.msg import String
 
 from .asyncrcl import spin
 
-DEFAULT_WS_URL = 'http://137.184.110.53:443'
+DEFAULT_WS_URL = 'http://10.201.40.238:8080'
 
 
 class StackConnector(Node):
@@ -36,17 +36,18 @@ class StackConnector(Node):
 
         self.register_handlers()
 
-        self._event_loop = asyncio.get_running_loop()
+        self._event_loop = asyncio.get_event_loop()
 
         self._event_loop.create_task(
             self.connect()
         )
 
-    async def send_to_stack(self, request):
-        self.logger.info(str(request))
+    def send_to_stack(self, request):
+        self.logger.info(
+            f"[Sending to Stack]: {{event: {request.event}, data: {request.data}}}")
+        asyncio.run_coroutine_threadsafe(self.sio_.emit(request.event, data=request.data), self._event_loop)
         self.logger.info(
             f"[Sent to Stack]: {{event: {request.event}, data: {request.data}}}")
-        await self.sio_.emit(request.event, request.data)
 
     async def connect(self):
         await self.sio_.connect(self.wsl_url)
@@ -120,7 +121,7 @@ async def run(args=None):
     #connector = aiohttp.TCPConnector(ssl=ssl_context)
     connector = aiohttp.TCPConnector()
     async with aiohttp.ClientSession(connector=connector) as http_session:
-        sio = socketio.AsyncClient(http_session=http_session, logger=True)
+        sio = socketio.AsyncClient(http_session=http_session, logger=True, engineio_logger=True)
 
         stack_connector = StackConnector(sio)
 
