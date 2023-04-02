@@ -54,6 +54,7 @@ class GameNode(Node):
         )
 
         self.task_client = ActionClient(self, Task, "task")
+        self._target_emotion = None
 
         timer_period = 0.5  # seconds
         self._timer = self.create_timer(timer_period, self.publish_state)
@@ -101,7 +102,7 @@ class GameNode(Node):
 
         self._goal_handle = goal_handle
 
-        if self._target_emotion == "happy":
+        if self._target_emotion == "happy" or self._target_emotion is None:
             self._get_task_result_future = goal_handle.get_result_async()
             self._get_task_result_future.add_done_callback(
                 self.task_result_callback)
@@ -213,6 +214,11 @@ class GameNode(Node):
                 _cb = self._ack_callback
                 self._ack_callback = None
                 _cb()
+        elif action == "recalibrate":
+            def on_fin(*_, **__):
+                self.logger.info("RESETTING HEAD")
+            self.send_task("reset", on_fin)
+
 
     def on_shutdown(self):
         if self._game.state.started:

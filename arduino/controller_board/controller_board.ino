@@ -134,9 +134,9 @@ void handle_new_target() {
       (double) target_state[Joint::HEAD_ROLL],
       (double) target_state[Joint::HEAD_PITCH],
       (double) target_state[Joint::HEAD_YAW],
-      target_state[Joint::LEFT_EAR_YAW],
+      target_state[Joint::LEFT_EAR_YAW] + 90,
       target_state[Joint::LEFT_EAR_PITCH] + 90,
-      target_state[Joint::RIGHT_EAR_YAW],
+      target_state[Joint::RIGHT_EAR_YAW] + 90,
       target_state[Joint::RIGHT_EAR_PITCH] + 90,
       1 /* 1 iterations */
     );

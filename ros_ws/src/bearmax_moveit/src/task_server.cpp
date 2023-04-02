@@ -46,6 +46,7 @@ MoveitTaskServer::MoveitTaskServer()
     REGISTER_TASK(quizzical);
     REGISTER_TASK(sad);
     REGISTER_TASK(angry);
+    REGISTER_TASK(reset);
 }
 
 /* ========== Task Executors ========== */
@@ -82,8 +83,8 @@ void MoveitTaskServer::execute_happy(
         std::vector<JointValueMap> tlst;
 
         auto stateOne = JointValueMap{
-            {L_EAR_PITCH, (PI / 6.0)},
-            {R_EAR_PITCH, (PI / -6.0)}
+            {L_EAR_ROT, (PI / 4.0)},
+            {R_EAR_ROT, (PI / -4.0)}
         };
 
         // Undo quizzical state if needed
@@ -94,8 +95,8 @@ void MoveitTaskServer::execute_happy(
         tlst.emplace_back(stateOne);
 
         auto stateTwo = JointValueMap{
-            {L_EAR_PITCH, (PI / -6.0)},
-            {R_EAR_PITCH, (PI / 6.0)}
+            {L_EAR_ROT, (PI / -4.0)},
+            {R_EAR_ROT, (PI / 4.0)}
         };
 
         tlst.emplace_back(stateTwo);
@@ -107,8 +108,8 @@ void MoveitTaskServer::execute_happy(
 
         // Now Reset ears back to normal
         tlst.emplace_back(JointValueMap{
-            {L_EAR_PITCH, 0.0},
-            {R_EAR_PITCH, 0.0}
+            {L_EAR_ROT, 0.0},
+            {R_EAR_ROT, 0.0}
         });
 
         return tlst;
@@ -143,10 +144,10 @@ void MoveitTaskServer::execute_sad(
     rclcpp::Rate loop_rate(1);
 
     auto stateOne = JointValueMap{
-        {L_EAR_PITCH, (PI / 3.0)},
-        {L_EAR_ROT, (PI / 2.0)},
-        {R_EAR_PITCH, (PI / -3.0)},
-        {R_EAR_ROT, (PI / 2.0)},
+        {L_EAR_ROT, (PI / 3.0)},
+        {R_EAR_ROT, (PI / -3.0)},
+        //        {L_EAR_ROT, (PI / 2.0)},
+//        {R_EAR_ROT, (PI / 2.0)},
         {HEAD_PITCH, (PI / -4.0)}
     };
 
@@ -198,10 +199,10 @@ void MoveitTaskServer::execute_angry(
     rclcpp::Rate loop_rate(1);
 
     auto stateOne = JointValueMap{
-        {L_EAR_PITCH, (PI / -3.0)},
-        {L_EAR_ROT, (PI / 2.0)},
-        {R_EAR_PITCH, (PI / 3.0)},
-        {R_EAR_ROT, (PI / 2.0)},
+        {L_EAR_ROT, (PI / -3.0)},
+        {R_EAR_ROT, (PI / 3.0)},
+//        {L_EAR_ROT, (PI / 2.0)},
+//        {R_EAR_ROT, (PI / 2.0)},
         {HEAD_PITCH, (PI / -4.0)}
     };
 
@@ -239,6 +240,36 @@ void MoveitTaskServer::execute_angry(
     auto result = std::make_shared<Task::Result>();
     result->success = true;
     RESUME_FACE_FOLLOWER(angry);
+    if (goal_handle->is_canceling()) {
+        goal_handle->canceled(result);
+    } else {
+        goal_handle->succeed(result);
+    }
+}
+
+// Task: reset
+void MoveitTaskServer::execute_reset(
+    const std::shared_ptr<GoalHandleTask> goal_handle)
+{
+    RCLCPP_INFO(this->get_logger(), "Executing goal: reset");
+
+    // Now Reset everything back to normal
+    auto stateLast = JointValueMap{
+        {L_EAR_PITCH, 0.0},
+        {R_EAR_PITCH, 0.0},
+        {L_EAR_ROT, 0.0},
+        {R_EAR_ROT, 0.0},
+        {HEAD_PITCH, 0.0},
+        {HEAD_ROLL, 0.0},
+        {HEAD_YAW, 0.0}
+    };
+
+    move_group_->setJointValueTarget(stateLast);
+    move_group_->move();
+
+    auto result = std::make_shared<Task::Result>();
+    result->success = true;
+    RESUME_FACE_FOLLOWER(reset);
     if (goal_handle->is_canceling()) {
         goal_handle->canceled(result);
     } else {

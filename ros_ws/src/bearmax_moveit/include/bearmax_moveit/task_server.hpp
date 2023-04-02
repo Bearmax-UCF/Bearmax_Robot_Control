@@ -136,6 +136,7 @@ class MoveitTaskServer : public rclcpp::Node
         DEFINE_TASK_EXECUTOR(quizzical);
         DEFINE_TASK_EXECUTOR(sad);
         DEFINE_TASK_EXECUTOR(angry);
+        DEFINE_TASK_EXECUTOR(reset);
 };
 
 #endif
