@@ -127,7 +127,7 @@ RUN \
     cd $ROS_DEPS_WS && \
     . /opt/ros/humble/install/setup.sh && \
     colcon build --merge-install \
-    --cmake-args -DCMAKE_BUILD_TYPE=Release && \
+    --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 # Remove build files (make the image smaller)
 RUN \
