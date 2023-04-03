@@ -34,7 +34,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./ros_ws
-          file: ./ros_ws/Dockerfile.ros_build
+          file: ./ros_ws/Dockerfile
           push: ${{ github.actor != 'dependabot[bot]' }}
           tags: "${{ env.docker_image_name }}:latest"
           platforms: linux/arm64
@@ -45,7 +45,7 @@ jobs:
           echo ${{ steps.docker_build.outputs.digest }}
       - name: Save Docker Image
         run: |
-          docker save -o bearmax.img "${{ env.docker_image_name }}:ros-base"
+          docker save -o bearmax.img "${{ env.docker_image_name }}:latest"
       - name: Upload Image artifact
         uses: actions/upload-artifact@v3
         with:
