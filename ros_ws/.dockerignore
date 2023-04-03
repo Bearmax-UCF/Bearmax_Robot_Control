@@ -7,3 +7,4 @@ Dockerfile.ros
 Makefile
 docker-compose.yml
 .dockerignore
+.gitignore

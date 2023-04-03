@@ -1,5 +1,4 @@
 dlib
-keras
 imutils
 sounddevice
 nest_asyncio

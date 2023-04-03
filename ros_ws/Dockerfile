@@ -73,22 +73,22 @@ RUN pip3 install --no-cache-dir --verbose numba
 #
 # CuPy
 #
-ARG CUPY_VERSION=v11.5.0
-ARG CUPY_NVCC_GENERATE_CODE="arch=compute_53,code=sm_53;arch=compute_62,code=sm_62;arch=compute_72,code=sm_72;arch=compute_87,code=sm_87"
-
-RUN git clone -b ${CUPY_VERSION} --recursive https://github.com/cupy/cupy cupy && \
-    cd cupy && \
-    pip3 install --no-cache-dir fastrlock && \
-    python3 setup.py install --verbose && \
-    cd ../ && \
-    rm -rf cupy
+#ARG CUPY_VERSION=v11.5.0
+#ARG CUPY_NVCC_GENERATE_CODE="arch=compute_53,code=sm_53;arch=compute_62,code=sm_62;arch=compute_72,code=sm_72;arch=compute_87,code=sm_87"
+#
+#RUN git clone -b ${CUPY_VERSION} --recursive https://github.com/cupy/cupy cupy && \
+#    cd cupy && \
+#    pip3 install --no-cache-dir fastrlock && \
+#    python3 setup.py install --verbose && \
+#    cd ../ && \
+#    rm -rf cupy
 
 
 #
 # PyCUDA
 #
-RUN pip3 uninstall -y pycuda
-RUN pip3 install --no-cache-dir --verbose pycuda six
+#RUN pip3 uninstall -y pycuda
+#RUN pip3 install --no-cache-dir --verbose pycuda six
 
 
 # ---- Now Build and Install Bearmax ROS Dependencies ----
@@ -108,7 +108,6 @@ COPY ./src/bearmax/robot.rosinstall robot.rosinstall
 
 # Install dependencies
 RUN \
-    --mount=type=cache,target=/opt/ros_deps \
     . /opt/ros/humble/install/setup.sh && \
     mkdir -p $ROS_DEPS_WS/src && \
     vcs import $ROS_DEPS_WS/src < robot.rosinstall && \
@@ -122,19 +121,12 @@ RUN \
     --skip-keys "libopencv-dev libopencv-contrib-dev libopencv-imgproc-dev python-opencv python3-opencv python-tensorflow-pip" && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get clean && \
-
     # Build Dependencies
-    cd $ROS_DEPS_WS && \
     . /opt/ros/humble/install/setup.sh && \
-    colcon build --merge-install \
-    --cmake-args -DCMAKE_BUILD_TYPE=Release
-
-# Remove build files (make the image smaller)
-RUN \
-    rm -rf $ROS_DEPS_WS/src && \
-    rm -rf $ROS_DEPS_WS/logs && \
-    rm -rf $ROS_DEPS_WS/build && \
-    rm /robot.rosinstall
+    cd $ROS_DEPS_WS && \
+    colcon build \
+        --merge-install \
+        --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 # Source ros deps from entrypoint
 RUN sed -i '$iros_source_env "'${ROS_DEPS_WS}'/install/setup.bash"' /ros_entrypoint.sh
@@ -146,9 +138,8 @@ COPY ./src/ $ROS_WS/src/
 WORKDIR $ROS_WS
 
 RUN \
-    --mount=type=cache,target=/ros_ws \
     . /opt/ros/humble/install/setup.sh && \
-    . $ROS_DEPS_WS/install/setup.bash && \
+    . $ROS_DEPS_WS/install/setup.sh && \
     apt-get update && \
     rosdep update && \
     rosdep install -ry \
