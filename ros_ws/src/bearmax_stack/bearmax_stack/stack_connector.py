@@ -15,7 +15,7 @@ from std_msgs.msg import String
 
 from .asyncrcl import spin
 
-DEFAULT_WS_URL = 'http://10.201.40.238:8080'
+DEFAULT_WS_URL = 'https://carewithbearmax.com'
 
 
 class StackConnector(Node):

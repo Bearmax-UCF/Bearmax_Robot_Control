@@ -34,7 +34,7 @@ def generate_launch_description():
             ),
             DeclareLaunchArgument(
                 "emotion_threshold",
-                default_value="3000",
+                default_value="15000",
                 description="The amount of time (milliseconds) needed for an emotion to be submitted to the emotion game instance."
             ),
             game

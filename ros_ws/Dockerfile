@@ -73,22 +73,22 @@ RUN pip3 install --no-cache-dir --verbose numba
 #
 # CuPy
 #
-#ARG CUPY_VERSION=v11.5.0
-#ARG CUPY_NVCC_GENERATE_CODE="arch=compute_53,code=sm_53;arch=compute_62,code=sm_62;arch=compute_72,code=sm_72;arch=compute_87,code=sm_87"
-#
-#RUN git clone -b ${CUPY_VERSION} --recursive https://github.com/cupy/cupy cupy && \
-#    cd cupy && \
-#    pip3 install --no-cache-dir fastrlock && \
-#    python3 setup.py install --verbose && \
-#    cd ../ && \
-#    rm -rf cupy
+ARG CUPY_VERSION=v11.5.0
+ARG CUPY_NVCC_GENERATE_CODE="arch=compute_53,code=sm_53;arch=compute_62,code=sm_62;arch=compute_72,code=sm_72;arch=compute_87,code=sm_87"
+
+RUN git clone -b ${CUPY_VERSION} --recursive https://github.com/cupy/cupy cupy && \
+    cd cupy && \
+    pip3 install --no-cache-dir fastrlock && \
+    python3 setup.py install --verbose && \
+    cd ../ && \
+    rm -rf cupy
 
 
 #
 # PyCUDA
 #
-#RUN pip3 uninstall -y pycuda
-#RUN pip3 install --no-cache-dir --verbose pycuda six
+RUN pip3 uninstall -y pycuda
+RUN pip3 install --no-cache-dir --verbose pycuda six
 
 
 # ---- Now Build and Install Bearmax ROS Dependencies ----
@@ -153,6 +153,12 @@ RUN \
     colcon build \
         --symlink-install \
         --cmake-args -DCMAKE_BUILD_TYPE=Release
+
+# Need to Manually update python-socketio past what the focal deb pkg provides
+RUN pip3 install --no-cache-dir -U python-socketio
+
+# Since we're using python 3.8, we can't use 3.10 features
+RUN sed -i 's/@dataclass(slots=True)/@dataclass()/' ${ROS_DEPS_WS}/install/lib/python3.8/site-packages/moveit_configs_utils/moveit_configs_builder.py
 
 # Source ros deps from entrypoint
 RUN sed -i '$iros_source_env "'${ROS_WS}'/install/setup.bash"' /ros_entrypoint.sh

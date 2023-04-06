@@ -1,10 +1,12 @@
-import os
-
 from launch import LaunchDescription
 from launch_ros.actions import Node
+from launch.substitutions import LaunchConfiguration
+from launch.actions import DeclareLaunchArgument
 
 
 def generate_launch_description():
+    video_device = LaunchConfiguration("video_device")
+
     camera = Node(
         package="v4l2_camera",
         executable="v4l2_camera_node",
@@ -13,8 +15,17 @@ def generate_launch_description():
             "image_size": [640, 480],
             "time_per_frame": [1, 6],
             "camera_frame_id": "camera_optical_link",
-            "video_device": "/dev/video2"
+            "video_device": video_device
         }]
     )
 
-    return LaunchDescription([camera])
+    return LaunchDescription(
+        [
+            DeclareLaunchArgument(
+                "video_device",
+                default_value="/dev/video0",
+                description="The device file of the camera to use."
+            ),
+            camera
+        ]
+    )
