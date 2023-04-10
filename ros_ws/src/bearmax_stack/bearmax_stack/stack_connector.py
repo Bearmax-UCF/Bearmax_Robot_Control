@@ -77,13 +77,13 @@ class StackConnector(Node):
             self.publisher_.publish(self.to_msg(f"ACK: [{msg}]"))
 
         @self.sio_.event
-        async def emotionGame(action):
+        async def emotionGame(action, userID):
             if not action in ("start", "stop"):
                 self.logger.error(
                     f"emotionGame handler expected string action and got {action}")
             # "emotionStart" or "emotionStop"
             self.publisher_.publish(self.to_msg(
-                "emotion" + action.capitalize()))
+                "emotion" + action.capitalize() + "-" + userID))
 
         @self.sio_.event
         async def recalibrate():

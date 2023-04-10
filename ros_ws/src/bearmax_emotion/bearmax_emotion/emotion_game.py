@@ -8,12 +8,9 @@ from std_msgs.msg import String
 from typing import Callable
 
 from bearmax_emotion.emotion_lib.src.gameNode import EmotionGame
-from bearmax_emotion.utils import state_to_msg, new_req
+from bearmax_emotion.utils import new_req
 from datetime import datetime, timedelta
-import json
 
-
-# TODO: Handle pause/resume/start/end as service server
 class GameNode(Node):
 
     def __init__(self):
@@ -123,7 +120,6 @@ class GameNode(Node):
 
         self._timer.cancel()
 
-    # TODO: Is this dead code?
     def handle_new_round(self, new_emotion: str, round_cb: Callable):
         self._last_emotion = None
         self._correct_emotion_count = 0
@@ -163,7 +159,7 @@ class GameNode(Node):
 
     def publish_state(self):
         # self.state_out_pub.publish(state_to_msg(self._game.state))
-        pass  # TODO: Fix error "The 'target_emotion' field must be of type 'str'"
+        pass
 
     def emotionCallback(self, data):
         if not self.round_in_progress:
@@ -199,9 +195,10 @@ class GameNode(Node):
     def stackCallback(self, data):
         action = data.data
         self.logger.info(f"Received from stack: {action}")
-        if action == "emotionStart":
-            def cb(*_, **__):
-                self._game.start()
+        if "emotionStart" in action:
+            def cb():
+                UserID = action.split("-")[1]
+                self._game.start(UserID)
             self.send_to_stack("speak", "Let's play a game!", cb)
         elif action == "emotionStop":
             final_score_str = self._game.end().to_json_str()
@@ -237,13 +234,6 @@ def main(args=None):
     rclpy.init(args=args)
 
     emotion_game = GameNode()
-
-    # try:
-    #     rclpy.spin(emotion_game)
-    # except:
-    #     # The context is already gone at this point
-    #     emotion_game.on_shutdown()
-    # rclpy.try_shutdown()
 
     while rclpy.ok():
         rclpy.spin_once(emotion_game)
