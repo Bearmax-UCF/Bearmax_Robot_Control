@@ -33,9 +33,9 @@ void setupHead(){
   rightEarYawServo.attach(8); //
   rightEarPitchServo.attach(9); //
 
-  servoAdjust[0] = -9; //0-front, 1-left, 2-right, 3-patform yaw, 4-left ear yaw, 5-left ear pitch, 6-right ear yaw, 7-right ear pitch
+  servoAdjust[0] = -5; //0-front, 1-left, 2-right, 3-patform yaw, 4-left ear yaw, 5-left ear pitch, 6-right ear yaw, 7-right ear pitch
   servoAdjust[1] = -9; //0-front, 1-left, 2-right, 3-patform yaw, 4-left ear yaw, 5-left ear pitch, 6-right ear yaw, 7-right ear pitch
-  servoAdjust[2] = 3; //0-front, 1-left, 2-right, 3-patform yaw, 4-left ear yaw, 5-left ear pitch, 6-right ear yaw, 7-right ear pitch
+  servoAdjust[2] = 7; //0-front, 1-left, 2-right, 3-patform yaw, 4-left ear yaw, 5-left ear pitch, 6-right ear yaw, 7-right ear pitch
   servoAdjust[3] = -4; //0-front, 1-left, 2-right, 3-patform yaw, 4-left ear yaw, 5-left ear pitch, 6-right ear yaw, 7-right ear pitch
   servoAdjust[4] = 3; //0-front, 1-left, 2-right, 3-patform yaw, 4-left ear yaw, 5-left ear pitch, 6-right ear yaw, 7-right ear pitch
   servoAdjust[5] = -3; //0-front, 1-left, 2-right, 3-patform yaw, 4-left ear yaw, 5-left ear pitch, 6-right ear yaw, 7-right ear pitch
