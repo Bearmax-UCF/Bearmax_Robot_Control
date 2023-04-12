@@ -22,7 +22,7 @@ class WSPConnector(Node):
 
         self.publisher_ = self.create_publisher(
             WSPSensorDataRaw,
-            'wspsensordata_raw',
+            '/wspsensordata_raw',
             rclpy.qos.QoSPresetProfiles.SENSOR_DATA.value
         )
 
