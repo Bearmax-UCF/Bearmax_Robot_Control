@@ -1,0 +1,7 @@
+{
+  "cpu": {
+    "fqbn": "adafruit:nrf52:feather52840sense",
+    "name": "Adafruit Feather nRF52840 Sense",
+    "port": "serial:///dev/ttyACM0"
+  }
+}
