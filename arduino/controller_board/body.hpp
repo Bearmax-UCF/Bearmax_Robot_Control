@@ -9,6 +9,10 @@
 #define LEFT_ARM_ROTATOR_PIN 15
 #define LEFT_ARM_ELBOW_PIN 16
 
+#ifndef BAUD_RATE
+#define BAUD_RATE 57600
+#endif
+
 void setupBody();
 
 void runBody(int chassis, int las, int lar, int lae, int ras, int rar, int rae);

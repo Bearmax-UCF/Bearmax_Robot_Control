@@ -1,7 +1,6 @@
 /*
  * Contains the code necessary to communicate with ROS master.
  */
-#include "head.hpp"
 #include "body.hpp"
 
 // This is to make switching between the production Due and other Arduinos used for development easier
@@ -41,14 +40,7 @@ int target_state[Joint::NUMBER_OF_JOINTS];
 
 void setup() {
   SerialConn.begin(BAUD_RATE, SERIAL_8N1);
-  Serial1.begin(BAUD_RATE, SERIAL_8N1);
-  while (!SerialConn) {
-    ; // Wait for serial port to connect.
-  }
   
-  // Run setup for Head
-  setupHead();
-
   // TODO: Run setup for arms & body
   setupBody();
 
@@ -109,41 +101,12 @@ void cmd_handler() {
       save_prev_target_state();
       deserialize_joint_states(raw_values, target_state);
       handle_new_target();
-      Serial1.println(cmd);
-      // Acknowledge command
-      SerialConn.print("ack: ");
-      SerialConn.println(cmd);
-    } else if (cmd.startsWith("r")) {
-      // WIP: If ros doesn't smooth positions well and we need to use velocity as well,
-      //      then we need to read current_state, instead of target.
-      String state_string = serialize_joint_states(target_state);
-      SerialConn.println(state_string);
-    } else {
-      //SerialConn.print("[Error]: Invalid Command: ");
-      //SerialConn.println(cmd);
     }
   }
 }
 
 void handle_new_target() {
 
-  // If one of the head joints has been updated, execute.
-  if (head_has_update()) {
-    //SerialConn.println("hi");
-    // iterations are 0 bkz we're assuming that ROS is sending real-time positions that will do its own smoothing.
-    runHead(
-      0, /* Not using head z */
-      (double) target_state[Joint::HEAD_ROLL],
-      (double) target_state[Joint::HEAD_PITCH],
-      (double) target_state[Joint::HEAD_YAW],
-      target_state[Joint::LEFT_EAR_YAW] + 90,
-      target_state[Joint::LEFT_EAR_PITCH] + 90,
-      target_state[Joint::RIGHT_EAR_YAW] + 90,
-      target_state[Joint::RIGHT_EAR_PITCH] + 90,
-      1 /* 1 iterations */
-    );
-  }
-  
   if (body_has_update()) {
     runBody(
       target_state[Joint::CHASSIS],
@@ -157,30 +120,8 @@ void handle_new_target() {
   }
 }
 
-#define NUM_OF_HEAD_JOINTS 7
-int head_joint_idxs[NUM_OF_HEAD_JOINTS] = {
-  Joint::HEAD_ROLL,
-  Joint::HEAD_PITCH,
-  Joint::HEAD_YAW,
-  Joint::LEFT_EAR_YAW,
-  Joint::LEFT_EAR_PITCH,
-  Joint::RIGHT_EAR_YAW,
-  Joint::RIGHT_EAR_PITCH
-};
-
-bool head_has_update() {
-  for (int i = 0; i < NUM_OF_HEAD_JOINTS; i++) {
-    int joint_idx = head_joint_idxs[i];
-    if (prev_target_state[joint_idx] != target_state[joint_idx]) {
-      return true;
-    }
-  }
-  return false;
-}
-
-#define NUM_OF_BODY_JOINTS 7
+#define NUM_OF_BODY_JOINTS 6
 int body_joint_idxs[NUM_OF_BODY_JOINTS] = {
-  Joint::CHASSIS,
   Joint::LEFT_ARM_SHOULDER,
   Joint::LEFT_ARM_ROTATOR,
   Joint::LEFT_ARM_ELBOW,

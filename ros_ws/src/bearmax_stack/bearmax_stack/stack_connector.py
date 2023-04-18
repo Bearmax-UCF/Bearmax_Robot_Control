@@ -78,6 +78,7 @@ class StackConnector(Node):
 
         @self.sio_.event
         async def emotionGame(action, userID):
+            self.logger.info(f"Got game state command: {action} | {userID}")
             if not action in ("start", "stop"):
                 self.logger.error(
                     f"emotionGame handler expected string action and got {action}")
@@ -109,19 +110,17 @@ class StackConnector(Node):
 
 async def run(args=None):
     rclpy.init(args=args)
-    """
     ssl_context = ssl.create_default_context()
 
     with path("bearmax_stack.ssl", "server-crt.pem") as SCERT_PATH:
         ssl_context.load_verify_locations(SCERT_PATH)
     with path("bearmax_stack.ssl", "client-crt.pem") as CCERT_PATH, path("bearmax_stack.ssl", "client-key.pem") as CKEY_PATH:
         ssl_context.load_cert_chain(certfile=CCERT_PATH, keyfile=CKEY_PATH)
-    """
 
-    #connector = aiohttp.TCPConnector(ssl=ssl_context)
-    connector = aiohttp.TCPConnector()
+    connector = aiohttp.TCPConnector(ssl=ssl_context)
+    #connector = aiohttp.TCPConnector()
     async with aiohttp.ClientSession(connector=connector) as http_session:
-        sio = socketio.AsyncClient(http_session=http_session, logger=True, engineio_logger=True)
+        sio = socketio.AsyncClient(http_session=http_session, logger=True)
 
         stack_connector = StackConnector(sio)
 

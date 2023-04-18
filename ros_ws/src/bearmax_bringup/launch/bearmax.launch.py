@@ -54,7 +54,6 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             os.path.join(
                 get_package_share_directory("bearmax_stack"),
-                'launch',
                 'stack.launch.py'
             )
         )
@@ -62,11 +61,11 @@ def generate_launch_description():
 
     return LaunchDescription(
         [
-            camera,
+#            camera,
             emotion_pipeline,
             base,
             task_server,
-#            emotion_game,
+            emotion_game,
 #            stack_connector
         ]
     )

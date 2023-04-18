@@ -200,7 +200,7 @@ class GameNode(Node):
                 UserID = action.split("-")[1]
                 self._game.start(UserID)
             self.send_to_stack("speak", "Let's play a game!", cb)
-        elif action == "emotionStop":
+        elif "emotionStop" in action:
             final_score_str = self._game.end().to_json_str()
             self.send_to_stack("emotionGameStats", final_score_str)
             self.logger.info(
