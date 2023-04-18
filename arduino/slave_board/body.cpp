@@ -10,12 +10,12 @@ Servo raeServo;
 
 void setupBody() {
 //    chassisServo.attach(CHASSIS_PIN);
-    lasServo.attach(RIGHT_ARM_SHOULDER_PIN);
-    larServo.attach(RIGHT_ARM_ROTATOR_PIN);
-    laeServo.attach(RIGHT_ARM_ELBOW_PIN);
-    rasServo.attach(LEFT_ARM_SHOULDER_PIN);
-    rarServo.attach(LEFT_ARM_ROTATOR_PIN);
-    raeServo.attach(LEFT_ARM_ELBOW_PIN);
+    lasServo.attach(LEFT_ARM_SHOULDER_PIN);
+    larServo.attach(LEFT_ARM_ROTATOR_PIN);
+    laeServo.attach(LEFT_ARM_ELBOW_PIN);
+    rasServo.attach(RIGHT_ARM_SHOULDER_PIN);
+    rarServo.attach(RIGHT_ARM_ROTATOR_PIN);
+    raeServo.attach(RIGHT_ARM_ELBOW_PIN);
 
  //   chassisServo.write(90);
     lasServo.write(90);

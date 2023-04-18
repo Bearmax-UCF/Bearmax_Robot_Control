@@ -1,6 +1,7 @@
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_ST7735.h> // Hardware-specific library for ST7735
 #include <SPI.h>
+#include "draw_utils.h"
 
 //#include "./eyes_closed.h"
 
@@ -31,7 +32,7 @@
 #define TFT_RST 9
 #define TFT_DC 8
 
-Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
+Bearmax_TFT tft = Bearmax_TFT(TFT_CS, TFT_DC, TFT_RST);
 
 enum Mode {
   NORMAL,
@@ -80,6 +81,8 @@ void setup() {
 
   //tft.drawRGBBitmap(0, 0, EYES_CLOSED, tft.width(), tft.height());
   //tft.drawLine(0, 0, 128, 128, RED);
+
+  //tft.fillAngledRect(TFT_WIDTH/2, TFT_HEIGHT/2, 50, 30, 45, WHITE);
 }
 
 long previousMillis = 0;
@@ -114,7 +117,7 @@ void happy() {
   #endif
 }
 
-void loop() {
+void loop() {/*
   handle_cmd();
 
   if (millis() - previousMillis >= blinkInterval) {
@@ -138,7 +141,7 @@ void loop() {
       happy();
     default:
       break;
-  }
+  }*/
 }
 
 void fillAngledRect(int16_t x, int16_t y, int16_t deg, int16_t w, int16_t h, uint16_t color) {
