@@ -47,6 +47,8 @@ MoveitTaskServer::MoveitTaskServer()
     REGISTER_TASK(sad);
     REGISTER_TASK(angry);
     REGISTER_TASK(reset);
+    REGISTER_TASK(wave);
+    REGISTER_TASK(bump);
 }
 
 /* ========== Task Executors ========== */
@@ -148,7 +150,14 @@ void MoveitTaskServer::execute_sad(
         {R_EAR_ROT, (PI / -3.0)},
         //        {L_EAR_ROT, (PI / 2.0)},
 //        {R_EAR_ROT, (PI / 2.0)},
-        {HEAD_PITCH, (PI / -4.0)}
+        {HEAD_PITCH, (PI / -4.0)},
+        // Crying gesture
+        {L_ARM_SHOULDER, (PI / -4.0)},
+        {L_ARM_ROTATOR, (PI / 3.0)},
+        {L_ARM_ELBOW, (PI)},
+        {R_ARM_SHOULDER, (PI / 4.0)},
+        {R_ARM_ROTATOR, (PI / -3.0)},
+        {R_ARM_ELBOW, (-1 * PI)}
     };
 
     // Undo quizzical state if needed
@@ -162,8 +171,22 @@ void MoveitTaskServer::execute_sad(
     RCLCPP_INFO(this->get_logger(),
             "Staying sad until sadness is cancelled on twitter.");
 
+    auto stateLoopOne = JointValueMap{
+        {L_ARM_ROTATOR, (PI / 3.0) + (PI / 6.0)},
+        {R_ARM_ROTATOR, (PI / -3.0) - (PI / 6.0)}
+    };
+
+    auto stateLoopTwo = JointValueMap{
+        {L_ARM_ROTATOR, (PI / 3.0) - (PI / 6.0)},
+        {R_ARM_ROTATOR, (PI / -3.0) + (PI / 6.0)}
+    };
+
+    bool alt = false;
     // Wait for action to be cancelled
     while (!goal_handle->is_canceling()) {
+        move_group_->setJointValueTarget(alt ? stateLoopOne : stateLoopTwo);
+        move_group_->move();
+        alt = !alt;
         loop_rate.sleep();
     }
 
@@ -175,7 +198,13 @@ void MoveitTaskServer::execute_sad(
         {R_EAR_PITCH, 0.0},
         {L_EAR_ROT, 0.0},
         {R_EAR_ROT, 0.0},
-        {HEAD_PITCH, 0.0}
+        {HEAD_PITCH, 0.0},
+        {L_ARM_SHOULDER, (PI)},
+        {L_ARM_ROTATOR, 0.0},
+        {L_ARM_ELBOW, 0.0},
+        {R_ARM_SHOULDER, (-1 * PI)},
+        {R_ARM_ROTATOR, 0.0},
+        {R_ARM_ELBOW, 0.0}
     };
 
     move_group_->setJointValueTarget(stateLast);
@@ -261,7 +290,9 @@ void MoveitTaskServer::execute_reset(
         {R_EAR_ROT, 0.0},
         {HEAD_PITCH, 0.0},
         {HEAD_ROLL, 0.0},
-        {HEAD_YAW, 0.0}
+        {HEAD_YAW, 0.0},
+        {R_ARM_SHOULDER, (-1 * PI)},
+        {L_ARM_SHOULDER, PI}
     };
 
     move_group_->setJointValueTarget(stateLast);
@@ -275,6 +306,137 @@ void MoveitTaskServer::execute_reset(
     } else {
         goal_handle->succeed(result);
     }
+}
+
+
+// Task: wave
+void MoveitTaskServer::execute_wave(
+    const std::shared_ptr<GoalHandleTask> goal_handle)
+{
+    RCLCPP_INFO(this->get_logger(), "Executing goal: wave");
+
+    auto const target_list = [this]{
+        std::vector<JointValueMap> tlst;
+
+        auto stateOne = JointValueMap{
+            {R_ARM_SHOULDER, (PI / 3.0)},
+            {L_ARM_SHOULDER, PI},
+            {R_ARM_ROTATOR, (PI / -6.0)},
+            {R_ARM_ELBOW, (PI / -4.0)},
+            {L_EAR_ROT, (PI / 4.0)},
+            {R_EAR_ROT, (PI / -4.0)}
+        };
+
+        // Undo quizzical state if needed
+        if (is_quizzical) {
+            stateOne.insert(std::pair{HEAD_ROLL, 0.0});
+        }
+
+        tlst.emplace_back(stateOne);
+
+        auto stateTwo = JointValueMap{
+            {R_ARM_ELBOW, (PI / 4.0)},
+            {L_EAR_ROT, (PI / -4.0)},
+            {R_EAR_ROT, (PI / 4.0)}
+        };
+
+        tlst.emplace_back(stateTwo);
+        // Wave "hand" back and forth
+        tlst.emplace_back(stateOne);
+        tlst.emplace_back(stateTwo);
+        tlst.emplace_back(stateOne);
+        tlst.emplace_back(stateTwo);
+
+        // Now Reset everything back to normal
+        tlst.emplace_back(JointValueMap{
+            {R_ARM_SHOULDER, (-1 * PI)},
+            {L_ARM_SHOULDER, PI},
+            {R_ARM_ROTATOR, 0.0},
+            {R_ARM_ELBOW, 0.0},
+            {L_EAR_ROT, 0.0},
+            {R_EAR_ROT, 0.0}
+        });
+
+        return tlst;
+    }();
+
+    int move_cnt = 1;
+    for (JointValueMap target : target_list) {
+        RCLCPP_INFO(this->get_logger(),
+            "Running Move Frame: %d", move_cnt);
+
+        move_group_->setJointValueTarget(target);
+
+        move_group_->move();
+        RCLCPP_INFO(this->get_logger(),
+            "Finished Move Frame: %d", move_cnt);
+
+        move_cnt++;
+    }
+
+
+    auto result = std::make_shared<Task::Result>();
+    result->success = true;
+    RESUME_FACE_FOLLOWER(wave);
+    goal_handle->succeed(result);
+}
+
+// Task: bump
+void MoveitTaskServer::execute_bump(
+    const std::shared_ptr<GoalHandleTask> goal_handle)
+{
+    RCLCPP_INFO(this->get_logger(), "Executing goal: bump");
+
+    auto const target_list = [this]{
+        std::vector<JointValueMap> tlst;
+
+        auto stateOne = JointValueMap{
+            {R_ARM_SHOULDER, (PI / -4.0)},
+            {R_ARM_ELBOW, (PI / -4.0)}
+        };
+
+        // Undo quizzical state if needed
+        if (is_quizzical) {
+            stateOne.insert(std::pair{HEAD_ROLL, 0.0});
+        }
+
+        tlst.emplace_back(stateOne);
+
+        auto stateTwo = JointValueMap{
+            {R_ARM_SHOULDER, 0.0},
+            {R_ARM_ELBOW, 0.0}
+        };
+
+        tlst.emplace_back(stateTwo);
+
+        // Now Reset everything back to normal
+        tlst.emplace_back(JointValueMap{
+            {R_ARM_SHOULDER, (-1 * PI)},
+            {R_ARM_ELBOW, 0.0}
+        });
+
+        return tlst;
+    }();
+
+    int move_cnt = 1;
+    for (JointValueMap target : target_list) {
+        RCLCPP_INFO(this->get_logger(),
+            "Running Move Frame: %d", move_cnt);
+
+        move_group_->setJointValueTarget(target);
+
+        move_group_->move();
+        RCLCPP_INFO(this->get_logger(),
+            "Finished Move Frame: %d", move_cnt);
+
+        move_cnt++;
+    }
+
+
+    auto result = std::make_shared<Task::Result>();
+    result->success = true;
+    RESUME_FACE_FOLLOWER(bump);
+    goal_handle->succeed(result);
 }
 
 /* ==================================== */

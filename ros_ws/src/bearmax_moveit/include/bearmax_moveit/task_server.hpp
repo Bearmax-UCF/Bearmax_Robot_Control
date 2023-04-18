@@ -38,6 +38,15 @@ const std::string L_EAR_PITCH = "left_ear_pitch_joint";
 const std::string L_EAR_ROT = "left_ear_rotator_joint";
 const std::string R_EAR_PITCH = "right_ear_pitch_joint";
 const std::string R_EAR_ROT = "right_ear_rotator_joint";
+// left arm
+const std::string L_ARM_SHOULDER = "left_arm_shoulder_joint";
+const std::string L_ARM_ROTATOR = "left_arm_rotator_joint";
+const std::string L_ARM_ELBOW = "left_arm_elbow_joint";
+// right arm
+const std::string R_ARM_SHOULDER = "right_arm_shoulder_joint";
+const std::string R_ARM_ROTATOR = "right_arm_rotator_joint";
+const std::string R_ARM_ELBOW = "right_arm_elbow_joint";
+
 
 
 class MoveitTaskServer : public rclcpp::Node
@@ -137,6 +146,8 @@ class MoveitTaskServer : public rclcpp::Node
         DEFINE_TASK_EXECUTOR(sad);
         DEFINE_TASK_EXECUTOR(angry);
         DEFINE_TASK_EXECUTOR(reset);
+        DEFINE_TASK_EXECUTOR(wave);
+        DEFINE_TASK_EXECUTOR(bump);
 };
 
 #endif

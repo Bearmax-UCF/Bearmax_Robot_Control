@@ -7,11 +7,11 @@ initial_positions:
   head_platform_yaw_joint: 0
   left_arm_elbow_joint: 0
   left_arm_rotator_joint: 0
-  left_arm_shoulder_joint: 0
+  left_arm_shoulder_joint: -90
   left_ear_pitch_joint: 0
   left_ear_rotator_joint: 0
   right_arm_elbow_joint: 0
   right_arm_rotator_joint: 0
-  right_arm_shoulder_joint: 0
+  right_arm_shoulder_joint: 90
   right_ear_pitch_joint: 0
   right_ear_rotator_joint: 0
