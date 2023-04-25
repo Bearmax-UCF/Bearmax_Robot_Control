@@ -117,7 +117,7 @@ void happy() {
   #endif
 }
 
-void loop() {/*
+void loop() {
   handle_cmd();
 
   if (millis() - previousMillis >= blinkInterval) {
@@ -141,7 +141,7 @@ void loop() {/*
       happy();
     default:
       break;
-  }*/
+  }
 }
 
 void fillAngledRect(int16_t x, int16_t y, int16_t deg, int16_t w, int16_t h, uint16_t color) {

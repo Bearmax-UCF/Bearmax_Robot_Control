@@ -2,9 +2,10 @@ import nest_asyncio
 nest_asyncio.apply()
 
 import rclpy
+import json
 from rclpy.node import Node
 from std_msgs.msg import Header
-from bearmax_msgs.msg import WSPSensorDataRaw, StressValue
+from bearmax_msgs.msg import WSPSensorDataRaw, StackRequest
 
 import asyncio
 from bleak import BleakClient, BleakScanner
@@ -25,6 +26,9 @@ class WSPConnector(Node):
             '/wspsensordata_raw',
             rclpy.qos.QoSPresetProfiles.SENSOR_DATA.value
         )
+
+        self.publisher_stack_ = self.create_publisher(
+            StackRequest, "/stack_in", 1)
 
         self._address = self.declare_parameter('address', DEFAULT_ADDRESS)
         self._name = self.declare_parameter('name', DEFAULT_NAME)
@@ -50,7 +54,14 @@ class WSPConnector(Node):
 
             self.publisher_.publish(msg)
 
-            self.logger.info
+            event = StackRequest()
+            event.event = "GSR"
+            event.data = json.dumps({
+                                        "value": int(data),
+                                        "ts": msg.header.stamp
+                                    })
+
+            self.publisher_stack_.publish(event)
 
         self._dev = None
         while self._dev is None:

@@ -55,8 +55,16 @@ void MoveitTaskServer::face_follower(const geometry_msgs::msg::Point & msg)
 
         // These values are in radians
         //                vals[HEAD_ROLL] = PI / 3.0;
-        vals[HEAD_YAW] = asin(delta_x / dist) + last_yaw;
-        vals[HEAD_PITCH] = asin(delta_y / dist) + last_pitch;
+        double dyaw = asin(delta_x / dist);
+        if (abs(dyaw + last_yaw) >= (PI / 2.0)) {
+            this->last_yaw = 0;
+        }
+        vals[HEAD_YAW] = dyaw + last_yaw;
+        double dpitch = asin(delta_y / dist);
+        if (abs(dpitch + last_pitch) >= (PI / 6.0)) {
+            this->last_pitch = 0;
+        }
+        vals[HEAD_PITCH] = dpitch + last_pitch;
 
         return vals;
     }();

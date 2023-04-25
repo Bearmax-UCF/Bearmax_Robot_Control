@@ -314,6 +314,7 @@ void MoveitTaskServer::execute_wave(
     const std::shared_ptr<GoalHandleTask> goal_handle)
 {
     RCLCPP_INFO(this->get_logger(), "Executing goal: wave");
+    rclcpp::Rate loop_rate(1);
 
     auto const target_list = [this]{
         std::vector<JointValueMap> tlst;
@@ -342,38 +343,45 @@ void MoveitTaskServer::execute_wave(
 
         tlst.emplace_back(stateTwo);
         // Wave "hand" back and forth
+        /*
         tlst.emplace_back(stateOne);
         tlst.emplace_back(stateTwo);
         tlst.emplace_back(stateOne);
         tlst.emplace_back(stateTwo);
-
-        // Now Reset everything back to normal
-        tlst.emplace_back(JointValueMap{
-            {R_ARM_SHOULDER, (-1 * PI)},
-            {L_ARM_SHOULDER, PI},
-            {R_ARM_ROTATOR, 0.0},
-            {R_ARM_ELBOW, 0.0},
-            {L_EAR_ROT, 0.0},
-            {R_EAR_ROT, 0.0}
-        });
+        */
 
         return tlst;
     }();
 
     int move_cnt = 1;
-    for (JointValueMap target : target_list) {
-        RCLCPP_INFO(this->get_logger(),
-            "Running Move Frame: %d", move_cnt);
+    while (!goal_handle->is_canceling()) {
+        for (JointValueMap target : target_list) {
+            RCLCPP_INFO(this->get_logger(),
+                "Running Move Frame: %d", move_cnt);
 
-        move_group_->setJointValueTarget(target);
+            move_group_->setJointValueTarget(target);
 
-        move_group_->move();
-        RCLCPP_INFO(this->get_logger(),
-            "Finished Move Frame: %d", move_cnt);
+            move_group_->move();
+            RCLCPP_INFO(this->get_logger(),
+                "Finished Move Frame: %d", move_cnt);
 
-        move_cnt++;
+            move_cnt++;
+        }
+        loop_rate.sleep();
     }
 
+    // Now Reset everything back to normal
+    auto stateLast = JointValueMap{
+        {R_ARM_SHOULDER, (-1 * PI)},
+        {L_ARM_SHOULDER, PI},
+        {R_ARM_ROTATOR, 0.0},
+        {R_ARM_ELBOW, 0.0},
+        {L_EAR_ROT, 0.0},
+        {R_EAR_ROT, 0.0}
+    };
+
+    move_group_->setJointValueTarget(stateLast);
+    move_group_->move();
 
     auto result = std::make_shared<Task::Result>();
     result->success = true;
@@ -385,53 +393,42 @@ void MoveitTaskServer::execute_wave(
 void MoveitTaskServer::execute_bump(
     const std::shared_ptr<GoalHandleTask> goal_handle)
 {
+    rclcpp::Rate loop_rate(1);
     RCLCPP_INFO(this->get_logger(), "Executing goal: bump");
 
-    auto const target_list = [this]{
-        std::vector<JointValueMap> tlst;
+    auto stateOne = JointValueMap{
+        {R_ARM_SHOULDER, (PI / -4.0)},
+        {R_ARM_ELBOW, (PI / -4.0)}
+    };
 
-        auto stateOne = JointValueMap{
-            {R_ARM_SHOULDER, (PI / -4.0)},
-            {R_ARM_ELBOW, (PI / -4.0)}
-        };
-
-        // Undo quizzical state if needed
-        if (is_quizzical) {
-            stateOne.insert(std::pair{HEAD_ROLL, 0.0});
-        }
-
-        tlst.emplace_back(stateOne);
-
-        auto stateTwo = JointValueMap{
-            {R_ARM_SHOULDER, 0.0},
-            {R_ARM_ELBOW, 0.0}
-        };
-
-        tlst.emplace_back(stateTwo);
-
-        // Now Reset everything back to normal
-        tlst.emplace_back(JointValueMap{
-            {R_ARM_SHOULDER, (-1 * PI)},
-            {R_ARM_ELBOW, 0.0}
-        });
-
-        return tlst;
-    }();
-
-    int move_cnt = 1;
-    for (JointValueMap target : target_list) {
-        RCLCPP_INFO(this->get_logger(),
-            "Running Move Frame: %d", move_cnt);
-
-        move_group_->setJointValueTarget(target);
-
-        move_group_->move();
-        RCLCPP_INFO(this->get_logger(),
-            "Finished Move Frame: %d", move_cnt);
-
-        move_cnt++;
+    // Undo quizzical state if needed
+    if (is_quizzical) {
+        stateOne.insert(std::pair{HEAD_ROLL, 0.0});
     }
 
+    move_group_->setJointValueTarget(stateOne);
+    move_group_->move();
+
+    while (!goal_handle->is_canceling()) {
+        loop_rate.sleep();
+    }
+
+    auto stateTwo = JointValueMap{
+        {R_ARM_SHOULDER, 0.0},
+        {R_ARM_ELBOW, 0.0}
+    };
+
+    move_group_->setJointValueTarget(stateTwo);
+    move_group_->move();
+
+    // Now Reset everything back to normal
+    auto stateLast = JointValueMap{
+        {R_ARM_SHOULDER, (-1 * PI)},
+        {R_ARM_ELBOW, 0.0}
+    };
+
+    move_group_->setJointValueTarget(stateLast);
+    move_group_->move();
 
     auto result = std::make_shared<Task::Result>();
     result->success = true;

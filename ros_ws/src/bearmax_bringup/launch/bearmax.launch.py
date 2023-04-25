@@ -66,6 +66,6 @@ def generate_launch_description():
             base,
             task_server,
             emotion_game,
-#            stack_connector
+#           stack_connector
         ]
     )
