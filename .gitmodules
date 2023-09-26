@@ -3,4 +3,4 @@
 	url = https://github.com/HealthSciTech/pyEDA.git
 [submodule "ros_ws/src/bearmax_emotion/bearmax_emotion/emotion_lib"]
 	path = ros_ws/src/bearmax_emotion/bearmax_emotion/emotion_lib
-	url = ../../ElijahMSmith/Senior-Design-Emotion-Game.git
+	url = ../Bearmax-Emotion-Game.git
