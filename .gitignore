@@ -8,3 +8,5 @@ ros_ws/log
 *pyc
 *.log
 *.vscode*
+bearmax-client.cert
+bearmax-client.key

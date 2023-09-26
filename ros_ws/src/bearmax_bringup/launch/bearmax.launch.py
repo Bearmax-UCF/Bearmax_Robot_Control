@@ -61,11 +61,11 @@ def generate_launch_description():
 
     return LaunchDescription(
         [
-#            camera,
+#           camera,
             emotion_pipeline,
             base,
             task_server,
             emotion_game,
-#           stack_connector
+           stack_connector
         ]
     )

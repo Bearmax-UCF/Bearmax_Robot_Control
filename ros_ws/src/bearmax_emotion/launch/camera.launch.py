@@ -23,7 +23,7 @@ def generate_launch_description():
         [
             DeclareLaunchArgument(
                 "video_device",
-                default_value="/dev/video0",
+                default_value="/dev/v4l/by-id/usb-Arducam_Technology_Co.__Ltd._Arducam_8mp_SN0001-video-index0",
                 description="The device file of the camera to use."
             ),
             camera

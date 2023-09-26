@@ -1,12 +1,13 @@
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
+from std_msgs.msg import String
 from geometry_msgs.msg import Point, PoseStamped, Pose
 from visualization_msgs.msg import Marker
 from bearmax_msgs.msg import StackCommand
 from bearmax_msgs.msg import Emotion
 from cv_bridge import CvBridge, CvBridgeError
-from bearmax_emotion.emotion_lib.src.pipelineNode import run_pipeline
+from bearmax_emotion.emotion_lib.src.pipelineNode import run_pipeline, recalibrate
 import math
 
 
@@ -39,6 +40,12 @@ class EmotionPipeline(Node):
             Emotion,
             "/emotion_out",
             1)
+        self.stack_sub = self.create_subscription(
+            String,
+            "/stack_out",
+            self.stackCallback,
+            1
+        )
 
         self.bridge = CvBridge()
 
@@ -52,6 +59,12 @@ class EmotionPipeline(Node):
     @property
     def logger(self):
         return self.get_logger()
+
+    def stackCallback(self, data):
+        action = data.data
+        self.logger.info("Recalibrating Pipeline!")
+        if action == "recalibrate":
+            recalibrate()
 
     def callback(self, data):
         try:

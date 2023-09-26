@@ -58,7 +58,7 @@ class WSPConnector(Node):
             event.event = "GSR"
             event.data = json.dumps({
                                         "value": int(data),
-                                        "ts": msg.header.stamp
+                                        "ts": self.get_clock().now().nanoseconds
                                     })
 
             self.publisher_stack_.publish(event)

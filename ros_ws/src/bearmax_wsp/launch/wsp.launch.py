@@ -10,8 +10,8 @@ def generate_launch_description():
     gsr_uuid = LaunchConfiguration("gsr_uuid")
 
     stack = Node(
-        package="bearmax_stack",
-        executable="stack_connector",
+        package="bearmax_wsp",
+        executable="wsp_connector",
         parameters=[
             {
                 "address": address,

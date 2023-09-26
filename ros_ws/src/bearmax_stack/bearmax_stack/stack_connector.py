@@ -15,6 +15,7 @@ from std_msgs.msg import String
 
 from .asyncrcl import spin
 
+token = "Bot fNXu8nfJCxgsWe"
 DEFAULT_WS_URL = 'https://carewithbearmax.com'
 
 
@@ -50,7 +51,7 @@ class StackConnector(Node):
             f"[Sent to Stack]: {{event: {request.event}, data: {request.data}}}")
 
     async def connect(self):
-        await self.sio_.connect(self.wsl_url)
+        await self.sio_.connect(self.wsl_url, headers={"Authorization": token})
         await self.sio_.wait()
 
     def register_handlers(self):
@@ -114,7 +115,7 @@ async def run(args=None):
 
     #with path("bearmax_stack.ssl", "server-crt.pem") as SCERT_PATH:
     #    ssl_context.load_verify_locations(SCERT_PATH)
-    #with path("bearmax_stack.ssl", "client-crt.pem") as CCERT_PATH, path("bearmax_stack.ssl", "client-key.pem") as CKEY_PATH:
+    #with path("bearmax_stack.ssl", "bearmax-client.cert") as CCERT_PATH, path("bearmax_stack.ssl", "bearmax-client.key") as CKEY_PATH:
     #    ssl_context.load_cert_chain(certfile=CCERT_PATH, keyfile=CKEY_PATH)
 
     #connector = aiohttp.TCPConnector(ssl=ssl_context)

@@ -298,6 +298,9 @@ void MoveitTaskServer::execute_reset(
     move_group_->setJointValueTarget(stateLast);
     move_group_->move();
 
+    this->last_pitch = 0;
+    this->last_yaw = 0;
+
     auto result = std::make_shared<Task::Result>();
     result->success = true;
     RESUME_FACE_FOLLOWER(reset);
