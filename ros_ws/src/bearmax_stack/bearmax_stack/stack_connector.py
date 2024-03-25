@@ -15,8 +15,9 @@ from std_msgs.msg import String
 
 from .asyncrcl import spin
 
-token = "Bot fNXu8nfJCxgsWe"
-DEFAULT_WS_URL = 'https://carewithbearmax.com'
+token = 'Bot kRudWq0e7Olf6QE-UrWVoeGR35bqWEDWyW1VuLHY'
+# token = 'Bot fNXu8nfJCxgsWe'
+DEFAULT_WS_URL = 'https://www.bearmaxcare.com'
 
 
 class StackConnector(Node):
